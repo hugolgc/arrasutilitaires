@@ -1,21 +1,64 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "../views/Home.vue";
+import Login from "../views/Login.vue";
+import store from "../store";
 
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    name: "Login",
+    component: Login,
+    beforeEnter: () => {
+      store.commit("setToken", null);
+      store.commit("setUser", null);
+    },
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: function () {
-      return import(/* webpackChunkName: "about" */ "../views/About.vue");
+    path: "/app",
+    name: "App",
+    redirect: "/app/companies",
+    component: () => import("../components/Layout.vue"),
+    beforeEnter: () => {
+      return store.getters.getUser == null ? "/" : true;
     },
+    children: [
+      // Companies
+      {
+        path: "companies",
+        component: () => import("../views/companies/Table.vue"),
+      },
+
+      // Cars
+      {
+        path: "cars",
+        component: () => import("../views/cars/Table.vue"),
+      },
+      {
+        path: "cars/add",
+        component: () => import("../views/cars/Add.vue"),
+      },
+      {
+        path: "cars/edit/:id",
+        component: () => import("../views/cars/Edit.vue"),
+      },
+
+      // Drivers
+      {
+        path: "drivers",
+        component: () => import("../views/drivers/Table.vue"),
+      },
+
+      // Commercials
+      {
+        path: "commercials",
+        component: () => import("../views/commercials/Table.vue"),
+      },
+
+      // Providers
+      {
+        path: "providers",
+        component: () => import("../views/providers/Table.vue"),
+      },
+    ],
   },
 ];
 
