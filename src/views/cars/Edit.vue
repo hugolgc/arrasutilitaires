@@ -359,9 +359,7 @@ export default {
         "YYYY-MM-DD"
       );
       this.car.mileages.forEach((mileage) => {
-        mileage.date = moment(mileage.date, "DD/MM/YYYY").format(
-          "YYYY-MM-DD"
-        );
+        mileage.date = moment(mileage.date, "DD/MM/YYYY").format("YYYY-MM-DD");
       });
       try {
         const { data } = await axios.put(
