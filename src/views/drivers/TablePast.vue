@@ -47,9 +47,9 @@ export default {
   },
   data() {
     return {
-      title: "👨‍💼 Commerciaux",
-      link: "/app/commercials",
-      type: "commercial",
+      title: "👷 Conducteurs",
+      link: "/app/drivers",
+      type: "conducteur",
     };
   },
   mounted() {

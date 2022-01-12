@@ -145,8 +145,6 @@ export default {
   methods: {
     logout() {
       localStorage.clear();
-      this.$store.commit("setToken", null);
-      this.$store.commit("setUser", null);
       this.$router.push("/");
     },
   },

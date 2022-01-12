@@ -26,6 +26,14 @@ const routes = [
         path: "companies",
         component: () => import("../views/companies/Table.vue"),
       },
+      {
+        path: "companies/add",
+        component: () => import("../views/companies/Add.vue"),
+      },
+      {
+        path: "companies/edit/:id",
+        component: () => import("../views/companies/Edit.vue"),
+      },
 
       // Cars
       {
@@ -45,6 +53,14 @@ const routes = [
       {
         path: "drivers",
         component: () => import("../views/drivers/Table.vue"),
+      },
+      {
+        path: "drivers/add",
+        component: () => import("../views/drivers/Add.vue"),
+      },
+      {
+        path: "drivers/edit/:id",
+        component: () => import("../views/drivers/Edit.vue"),
       },
 
       // Commercials
