@@ -71,34 +71,71 @@
           Entreprise
         </th>
         <td class="pb-1.5">
-          <router-link
+          <div
             v-if="car.compagny"
-            :to="'/app/companies/edit/' + car.compagny.id"
             class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
           >
             <span
-              class="font-medium underline underline-offset-2 decoration-white/30"
+              @click="$router.push('/app/companies/edit/' + car.compagny.id)"
+              class="block font-medium underline underline-offset-2 decoration-white/30 cursor-pointer"
               >{{ car.compagny.name }}</span
             >
-            <span
-              class="text-gray-light font-medium opacity-0 group-hover:opacity-100"
-              >Voir</span
-            >
-          </router-link>
+            <div class="space-x-3">
+              <span
+                @click="$router.push('/app/companies/edit/' + car.compagny.id)"
+                class="text-gray-light font-medium opacity-0 cursor-pointer group-hover:opacity-100"
+                >Voir</span
+              >
+              <span
+                @click="associateCompany = true"
+                class="text-gray-light font-medium opacity-0 cursor-pointer group-hover:opacity-100"
+                >Modifier</span
+              >
+            </div>
+          </div>
+          <p
+            v-else
+            @click="associateCompany = true"
+            class="px-2 py-1.5 rounded font-medium underline underline-offset-2 decoration-white/30 cursor-pointer hover:bg-gray"
+          >
+            Associer
+          </p>
         </td>
       </tr>
       <tr>
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
-          Motorisation
+          Conducteur
         </th>
         <td class="pb-1.5">
-          <input
-            v-model="car.motor"
-            type="text"
-            maxlength="255"
-            placeholder="Saisir du texte"
-            class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark focus:shadow-xl"
-          />
+          <div
+            v-if="car.driver"
+            class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
+          >
+            <span
+              @click="$router.push('/app/drivers/edit/' + car.driver.id)"
+              class="block font-medium underline underline-offset-2 decoration-white/30 cursor-pointer"
+              >{{ car.driver.name }}</span
+            >
+            <div class="space-x-3">
+              <span
+                @click="$router.push('/app/drivers/edit/' + car.driver.id)"
+                class="text-gray-light font-medium opacity-0 cursor-pointer group-hover:opacity-100"
+                >Voir</span
+              >
+              <span
+                @click="associateCar = true"
+                class="text-gray-light font-medium opacity-0 cursor-pointer group-hover:opacity-100"
+                >Modifier</span
+              >
+            </div>
+          </div>
+          <p
+            v-else
+            @click="associateCar = true"
+            class="px-2 py-1.5 rounded font-medium underline underline-offset-2 decoration-white/30 cursor-pointer hover:bg-gray"
+          >
+            Associer
+          </p>
         </td>
       </tr>
       <tr>
@@ -127,6 +164,20 @@
               setDate(mileage.date)
             }}</span>
           </p>
+        </td>
+      </tr>
+      <tr>
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Motorisation
+        </th>
+        <td class="pb-1.5">
+          <input
+            v-model="car.motor"
+            type="text"
+            maxlength="255"
+            placeholder="Saisir du texte"
+            class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark focus:shadow-xl"
+          />
         </td>
       </tr>
       <tr>
@@ -304,15 +355,41 @@
       </svg>
     </button>
   </div>
+  <Associate
+    :list="drivers"
+    :id="car.id"
+    type="cars"
+    fieldChange="driver"
+    searchField="name"
+    placeholder="Nom du conducteur"
+    v-if="associateCar"
+    @emit="setAssociate"
+  />
+  <Associate
+    :list="companies"
+    :id="car.id"
+    type="cars"
+    fieldChange="compagny"
+    searchField="name"
+    placeholder="Nom de l'entreprise"
+    v-if="associateCompany"
+    @emit="setAssociate"
+  />
 </template>
 
 <script>
 import axios from "axios";
 import moment from "moment";
+import Associate from "../../components/Associate.vue";
 
 export default {
+  components: {
+    Associate,
+  },
   data() {
     return {
+      associateCar: false,
+      associateCompany: false,
       car: {},
       load: false,
       compare: {
@@ -322,7 +399,26 @@ export default {
       },
     };
   },
+  computed: {
+    drivers() {
+      return this.$store.getters.getDrivers;
+    },
+    companies() {
+      return this.$store.getters.getCompanies;
+    },
+  },
   methods: {
+    setAssociate(show) {
+      this.associateCar = show;
+      this.associateCompany = show;
+      this.setLoad();
+    },
+    getCar() {
+      this.car = this.$store.getters.findCar(this.$route.params.id);
+      if (this.car.id) {
+        this.car.service = moment(this.car.service).format("DD/MM/YYYY");
+      }
+    },
     compareMileages(mileage) {
       if (this.compare.mileages.length > 1) {
         this.compare.mileages = [];
@@ -399,10 +495,7 @@ export default {
     },
   },
   beforeMount() {
-    this.car = this.$store.getters.findCar(this.$route.params.id);
-    if (this.car.id) {
-      this.car.service = moment(this.car.service).format("DD/MM/YYYY");
-    }
+    this.getCar();
   },
   mounted() {
     this.$store.commit("setHeader", [
@@ -415,6 +508,7 @@ export default {
         link: `/app/cars/edit/${this.car.id}`,
       },
     ]);
+    document.addEventListener("appSetup", () => this.getCar());
   },
 };
 </script>

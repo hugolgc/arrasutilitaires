@@ -58,19 +58,25 @@
         </td>
       </tr>
       <tr>
-        <th class="flex px-2 py-1.5 pb-3 text-left text-gray-light font-medium">
+        <th class="flex px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
           Véhicules ({{ driver.cars.length }})
         </th>
-        <td class="px-2 py-1.5 pb-1.5">
-          <span
+        <td class="pb-1.5">
+          <router-link
             v-for="car in driver.cars"
             :key="car.id"
-            class="block pb-1.5 font-medium underline underline-offset-2 decoration-white/30"
+            :to="'/app/cars/edit/' + car.id"
+            class="group flex justify-between mb-1.5 px-2 py-1.5 rounded hover:bg-gray"
           >
-            <router-link :to="'/app/cars/edit/' + car.id">{{
-              car.model
-            }}</router-link>
-          </span>
+            <span
+              class="font-medium underline underline-offset-2 decoration-white/30"
+              >{{ car.model }} {{ car.brand }}</span
+            >
+            <span
+              class="text-gray-light font-medium opacity-0 group-hover:opacity-100"
+              >Voir</span
+            >
+          </router-link>
         </td>
       </tr>
     </table>

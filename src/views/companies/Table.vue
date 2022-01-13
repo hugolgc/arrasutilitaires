@@ -68,7 +68,7 @@ export default {
         this.$store.getters.getUrl("/compagnies"),
         { headers: { Authorization: `Bearer ${this.$store.getters.getToken}` } }
       );
-      this.$store.commit("setCompanies", data);
+      this.$store.commit("setCompanies", data.reverse());
     } catch (error) {
       alert("Erreur lors de la récupération des données.");
     }

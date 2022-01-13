@@ -7,7 +7,7 @@
       <tr class="divide-x divide-gray">
         <th class="px-2 py-1.5 font-normal">Nom</th>
         <th class="px-2 py-1.5 font-normal">Téléphone</th>
-        <th class="px-2 py-1.5 text-right font-normal">Véhicules</th>
+        <th class="px-2 py-1.5 font-normal">Véhicules</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-gray">
@@ -33,9 +33,21 @@
         </td>
         <td class="px-2 py-1.5 select-all">{{ driver.phone }}</td>
         <td>
-          <p class="px-2 py-1.5 text-right">
-            {{ driver.cars.length }}
-          </p>
+          <router-link
+            v-for="car in driver.cars"
+            :key="car.id"
+            :to="'/app/cars/edit/' + car.id"
+            class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
+          >
+            <span
+              class="font-medium underline underline-offset-2 decoration-white/30"
+              >{{ car.model }} {{ car.brand }}</span
+            >
+            <span
+              class="text-gray-light font-medium opacity-0 group-hover:opacity-100"
+              >Voir</span
+            >
+          </router-link>
         </td>
       </tr>
     </tbody>
@@ -67,7 +79,7 @@ export default {
       const { data } = await axios.get(this.$store.getters.getUrl("/drivers"), {
         headers: { Authorization: `Bearer ${this.$store.getters.getToken}` },
       });
-      this.$store.commit("setDrivers", data);
+      this.$store.commit("setDrivers", data.reverse());
     } catch (error) {
       alert("Erreur lors de la récupération des données.");
     }

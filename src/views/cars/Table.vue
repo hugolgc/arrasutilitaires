@@ -82,7 +82,7 @@ export default {
       const { data } = await axios.get(this.$store.getters.getUrl("/cars"), {
         headers: { Authorization: `Bearer ${this.$store.getters.getToken}` },
       });
-      this.$store.commit("setCars", data);
+      this.$store.commit("setCars", data.reverse());
     } catch (error) {
       alert("Erreur lors de la récupération des données.");
     }
