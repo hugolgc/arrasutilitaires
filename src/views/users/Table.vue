@@ -80,15 +80,6 @@ export default {
     }
   },
   async mounted() {
-    const { data } = await axios.get(
-      this.$store.getters.getUrl("/users-permissions/roles"),
-      {
-        headers: { Authorization: `Bearer ${this.$store.getters.getToken}` },
-      }
-    );
-    if (data) {
-      console.log(data);
-    }
     this.$store.commit("setHeader", [
       {
         name: this.title,
