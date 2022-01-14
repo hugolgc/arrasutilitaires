@@ -139,12 +139,7 @@ export default {
       }, 3000);
     },
     async handleSubmit() {
-      if (
-        this.$store.getters.getUser.role.type != "super_admin" ||
-        this.$store.getters.getUser.role.type != "authenticated"
-      ) {
-        return;
-      }
+      if (this.$store.getters.getUser.role.type == "customer") return;
       if (this.password.length) {
         this.user.password = this.password;
       }

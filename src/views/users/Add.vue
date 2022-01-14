@@ -99,23 +99,17 @@ export default {
       role: "4",
     };
   },
-  computed: {
-    users() {
-      return this.$store.getters.getUsers.filter(
-        (user) => user.email == this.email
-      );
-    },
-  },
   methods: {
     async handleSubmit() {
+      if (this.$store.getters.getUser.role.type == "customer") return;
       if (
-        this.$store.getters.getUser.role.type != "super_admin" ||
-        this.$store.getters.getUser.role.type != "authenticated"
+        this.$store.getters.getUsers.filter((user) => user.email == this.email)
+          .length ||
+        this.$store.getters.getUsers.filter(
+          (user) => user.username == this.username
+        ).length
       ) {
-        return;
-      }
-      if (this.users.length) {
-        alert("Cette adresse e-mail est utilisée par un autre utilisateur.");
+        alert("Le nom ou l'adresse e-mail sont déjà utilisés.");
         return;
       }
       try {
