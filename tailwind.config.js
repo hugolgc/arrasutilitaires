@@ -10,6 +10,9 @@ module.exports = {
           darker: "#2f3437",
         },
       },
+      zIndex: {
+        negative: "-1",
+      },
     },
   },
   plugins: [],

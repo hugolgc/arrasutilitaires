@@ -110,25 +110,6 @@ export default {
         if (data) {
           this.$store.commit("setApp");
           this.handleClose();
-          // try {
-          //   const { data } = await axios.get(
-          //     this.$store.getters.getUrl(`/${this.type}`),
-          //     {
-          //       headers: {
-          //         Authorization: `Bearer ${this.$store.getters.getToken}`,
-          //       },
-          //     }
-          //   );
-          //   if (data) {
-          //     this.$store.commit(
-          //       `set${this.capitalize(this.type)}`,
-          //       data.reverse()
-          //     );
-          //     this.handleClose();
-          //   }
-          // } catch (error) {
-          //   alert("Erreur lors de la récupération des données.");
-          // }
         }
       } catch (error) {
         alert("Erreur durant l'envoie des données.");

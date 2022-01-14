@@ -1,6 +1,12 @@
 <template>
-  <h1 class="text-5xl font-bold">{{ title }}</h1>
-  <p class="mt-8 mb-2 inline-block">
+  <h1 class="mb-8 text-5xl font-bold">{{ title }}</h1>
+  <p
+    v-if="
+      this.$store.getters.getUser.role.type == 'super_admin' ||
+      this.$store.getters.getUser.role.type == 'authenticated'
+    "
+    class="mb-2 inline-block"
+  >
     <router-link
       :to="link + '/add'"
       class="flex items-center pr-1.5 pl-1 py-0.5 space-x-1 rounded hover:bg-gray text-gray-light"

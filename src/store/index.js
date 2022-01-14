@@ -10,6 +10,7 @@ export default createStore({
     header: [],
     companies: [],
     drivers: [],
+    users: [],
   },
   getters: {
     getUrl: (state) => (link) => {
@@ -45,6 +46,12 @@ export default createStore({
     findCar: (state) => (id) => {
       return state.cars.find((car) => car.id == id);
     },
+    getUsers(state) {
+      return state.users;
+    },
+    findUser: (state) => (id) => {
+      return state.users.find((user) => user.id == id);
+    },
   },
   mutations: {
     setToken(state, jwt) {
@@ -74,14 +81,22 @@ export default createStore({
     addCar(state, car) {
       state.cars.push(car);
     },
+    setUsers(state, users) {
+      state.users = users;
+    },
+    addUser(state, user) {
+      state.users.push(user);
+    },
     async setApp(state) {
       // Companies
       try {
         const { data } = await axios.get(state.url + "/compagnies", {
           headers: { Authorization: `Bearer ${state.token}` },
         });
-        state.companies = data.reverse();
-        console.log("Companies", data);
+        if (data) {
+          state.companies = data.reverse();
+          console.log("Companies", data);
+        }
       } catch (error) {
         alert("Erreur lors de la récupération des données.");
         return;
@@ -92,8 +107,10 @@ export default createStore({
         const { data } = await axios.get(state.url + "/cars", {
           headers: { Authorization: `Bearer ${state.token}` },
         });
-        state.cars = data.reverse();
-        console.log("Cars", data);
+        if (data) {
+          state.cars = data.reverse();
+          console.log("Cars", data);
+        }
       } catch (error) {
         alert("Erreur lors de la récupération des données.");
         return;
@@ -104,14 +121,30 @@ export default createStore({
         const { data } = await axios.get(state.url + "/drivers", {
           headers: { Authorization: `Bearer ${state.token}` },
         });
-        state.drivers = data.reverse();
-        console.log("Drivers", data);
+        if (data) {
+          state.drivers = data.reverse();
+          console.log("Drivers", data);
+        }
       } catch (error) {
         alert("Erreur lors de la récupération des données.");
         return;
       }
 
-      // Commercials
+      // Users
+      if (state.user.role.type == "super_admin") {
+        try {
+          const { data } = await axios.get(state.url + "/users", {
+            headers: { Authorization: `Bearer ${state.token}` },
+          });
+          if (data) {
+            state.users = data.reverse();
+            console.log("Users", data);
+          }
+        } catch (error) {
+          alert("Erreur lors de la récupération des données.");
+          return;
+        }
+      }
 
       // Providers
 

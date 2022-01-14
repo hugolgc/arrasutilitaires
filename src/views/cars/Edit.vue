@@ -87,6 +87,10 @@
                 >Voir</span
               >
               <span
+                v-if="
+                  $store.getters.getUser.role.type == 'super_admin' ||
+                  $store.getters.getUser.role.type == 'authenticated'
+                "
                 @click="associateCompany = true"
                 class="text-gray-light font-medium opacity-0 cursor-pointer group-hover:opacity-100"
                 >Modifier</span
@@ -94,7 +98,10 @@
             </div>
           </div>
           <p
-            v-else
+            v-else-if="
+              $store.getters.getUser.role.type == 'super_admin' ||
+              $store.getters.getUser.role.type == 'authenticated'
+            "
             @click="associateCompany = true"
             class="px-2 py-1.5 rounded font-medium underline underline-offset-2 decoration-white/30 cursor-pointer hover:bg-gray"
           >
@@ -123,6 +130,10 @@
                 >Voir</span
               >
               <span
+                v-if="
+                  $store.getters.getUser.role.type == 'super_admin' ||
+                  $store.getters.getUser.role.type == 'authenticated'
+                "
                 @click="associateCar = true"
                 class="text-gray-light font-medium opacity-0 cursor-pointer group-hover:opacity-100"
                 >Modifier</span
@@ -130,7 +141,10 @@
             </div>
           </div>
           <p
-            v-else
+            v-else-if="
+              $store.getters.getUser.role.type == 'super_admin' ||
+              $store.getters.getUser.role.type == 'authenticated'
+            "
             @click="associateCar = true"
             class="px-2 py-1.5 rounded font-medium underline underline-offset-2 decoration-white/30 cursor-pointer hover:bg-gray"
           >
@@ -140,13 +154,70 @@
       </tr>
       <tr>
         <th class="block text-left text-gray-light font-medium">
-          <p class="mb-1.5 px-2 py-1.5">Kilométrages</p>
+          <p class="flex items-center mb-1.5 px-2 py-1.5 space-x-2">
+            <span>Kilométrages</span>
+            <span
+              v-if="
+                !mileage.show &&
+                ($store.getters.getUser.role.type == 'super_admin' ||
+                  $store.getters.getUser.role.type == 'authenticated')
+              "
+              @click="mileage.show = true"
+              class="cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </p>
           <p v-show="compare.distance" class="mb-1.5 px-2 py-1.5 text-white">
             {{ compare.distance ? compare.distance.toLocaleString("fr") : "" }}
             km en {{ compare.time }} jour{{ compare.time > 1 ? "s" : "" }}
           </p>
         </th>
         <td>
+          <p v-show="mileage.show" class="flex mb-1.5 px-2 py-1.5">
+            <input
+              v-model="mileage.distance"
+              type="text"
+              placeholder="Distance (km)"
+              maxlength="255"
+              class="w-full bg-transparent placeholder:text-gray-light outline-none"
+            />
+            <input
+              v-model="mileage.date"
+              type="text"
+              placeholder="Date (jj/mm/aaaa)"
+              maxlength="255"
+              class="w-full bg-transparent placeholder:text-gray-light outline-none"
+            />
+            <span
+              @click="handleMileage()"
+              class="flex-none text-gray-light cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </p>
           <p
             v-for="mileage in car.mileages"
             :key="mileage.id"
@@ -322,6 +393,10 @@
       </tr>
     </table>
     <button
+      v-if="
+        $store.getters.getUser.role.type == 'super_admin' ||
+        $store.getters.getUser.role.type == 'authenticated'
+      "
       type="submit"
       class="w-full bg-gray p-1.5 border border-gray rounded"
     >
@@ -334,7 +409,10 @@
       Modifications enregistrées !
     </p>
   </form>
-  <div class="fixed top-0 right-0 p-3">
+  <div
+    v-if="this.$store.getters.getUser.role.type == 'super_admin'"
+    class="fixed top-0 right-0 p-3"
+  >
     <button
       @click="handleDelete()"
       class="p-1.5 text-gray-light rounded hover:bg-gray"
@@ -390,6 +468,11 @@ export default {
     return {
       associateCar: false,
       associateCompany: false,
+      mileage: {
+        show: false,
+        date: "",
+        distance: "",
+      },
       car: {},
       load: false,
       compare: {
@@ -451,6 +534,12 @@ export default {
       return moment(date).format("DD/MM/YYYY");
     },
     async handleSubmit() {
+      if (
+        this.$store.getters.getUser.role.type != "super_admin" ||
+        this.$store.getters.getUser.role.type != "authenticated"
+      ) {
+        return;
+      }
       this.car.service = moment(this.car.service, "DD/MM/YYYY").format(
         "YYYY-MM-DD"
       );
@@ -493,8 +582,41 @@ export default {
         }
       }
     },
+    async handleMileage() {
+      if (this.mileage.date.length && this.mileage.distance.length) {
+        this.mileage.date = moment(this.mileage.date, "DD/MM/YYYY").format(
+          "YYYY-MM-DD"
+        );
+        try {
+          const { data } = await axios.post(
+            this.$store.getters.getUrl(`/mileages`),
+            {
+              car: this.car.id,
+              date: this.mileage.date,
+              kilometers: this.mileage.distance,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.getters.getToken}`,
+              },
+            }
+          );
+          if (data) {
+            this.car.mileages.push(data);
+            this.mileage.date = "";
+            this.mileage.distance = "";
+          }
+        } catch (error) {
+          alert("Erreur durant l'envoie des données.");
+        }
+      }
+    },
   },
   beforeMount() {
+    this.getCar();
+    console.log(this.car);
+  },
+  beforeUpdate() {
     this.getCar();
   },
   mounted() {

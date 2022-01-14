@@ -54,10 +54,12 @@ export default {
             password: this.password,
           }
         );
-        localStorage.setItem("token", data.jwt);
-        this.$store.commit("setToken", data.jwt);
-        this.$store.commit("setUser", data.user);
-        this.redirectApp();
+        if (data) {
+          localStorage.setItem("token", data.jwt);
+          this.$store.commit("setToken", data.jwt);
+          this.$store.commit("setUser", data.user);
+          this.redirectApp();
+        }
       } catch (error) {
         alert("Ces identifiants ne correspondent pas.");
       }
@@ -75,9 +77,11 @@ export default {
           this.$store.getters.getUrl("/users/me"),
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        this.$store.commit("setToken", token);
-        this.$store.commit("setUser", data);
-        this.redirectApp();
+        if (data) {
+          this.$store.commit("setToken", token);
+          this.$store.commit("setUser", data);
+          this.redirectApp();
+        }
       } catch (error) {
         localStorage.clear();
       }

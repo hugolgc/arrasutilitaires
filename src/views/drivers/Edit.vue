@@ -36,7 +36,7 @@
         <td class="pb-1.5">
           <input
             v-model="driver.email"
-            type="text"
+            type="email"
             maxlength="255"
             placeholder="Saisir du texte"
             class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark focus:shadow-xl"
@@ -81,6 +81,10 @@
       </tr>
     </table>
     <button
+      v-if="
+        $store.getters.getUser.role.type == 'super_admin' ||
+        $store.getters.getUser.role.type == 'authenticated'
+      "
       type="submit"
       class="w-full bg-gray p-1.5 border border-gray rounded"
     >
@@ -93,7 +97,10 @@
       Modifications enregistrées !
     </p>
   </form>
-  <div class="fixed top-0 right-0 p-3">
+  <div
+    v-if="this.$store.getters.getUser.role.type == 'super_admin'"
+    class="fixed top-0 right-0 p-3"
+  >
     <button
       @click="handleDelete()"
       class="p-1.5 text-gray-light rounded hover:bg-gray"
@@ -134,6 +141,12 @@ export default {
       }, 3000);
     },
     async handleSubmit() {
+      if (
+        this.$store.getters.getUser.role.type != "super_admin" ||
+        this.$store.getters.getUser.role.type != "authenticated"
+      ) {
+        return;
+      }
       try {
         const { data } = await axios.put(
           this.$store.getters.getUrl(`/drivers/${this.driver.id}`),
@@ -171,6 +184,9 @@ export default {
     },
   },
   beforeMount() {
+    this.driver = this.$store.getters.findDriver(this.$route.params.id);
+  },
+  beforeUpdate() {
     this.driver = this.$store.getters.findDriver(this.$route.params.id);
   },
   mounted() {

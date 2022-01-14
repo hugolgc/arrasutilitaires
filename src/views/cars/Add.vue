@@ -242,6 +242,12 @@ export default {
   },
   methods: {
     async handleSubmit() {
+      if (
+        this.$store.getters.getUser.role.type != "super_admin" ||
+        this.$store.getters.getUser.role.type != "authenticated"
+      ) {
+        return;
+      }
       this.service = moment(this.service, "DD/MM/YYYY").format("YYYY-MM-DD");
       try {
         const { data } = await axios.post(

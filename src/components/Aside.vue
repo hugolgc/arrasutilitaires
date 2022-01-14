@@ -9,6 +9,7 @@
     </div>
     <nav class="text-white/60">
       <p
+        @click="setSearch(true)"
         class="flex items-center px-4 py-1 space-x-2 cursor-pointer hover:bg-gray"
       >
         <span>
@@ -74,9 +75,9 @@
       </p>
     </nav>
     <ul class="pt-5 text-white/60">
-      <li v-for="(item, key) in menu" :key="key">
+      <li>
         <router-link
-          :to="item.link"
+          to="/app/companies"
           class="flex items-center px-4 py-1 space-x-2 hover:bg-gray"
         >
           <div>
@@ -94,47 +95,127 @@
             </svg>
           </div>
           <p class="space-x-2">
-            <span class="text-white">{{ item.icon }}</span>
-            <strong>{{ item.name }}</strong>
+            <span class="text-white">🏗</span>
+            <strong>Entreprises</strong>
+          </p>
+        </router-link>
+      </li>
+      <li>
+        <router-link
+          to="/app/cars"
+          class="flex items-center px-4 py-1 space-x-2 hover:bg-gray"
+        >
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <p class="space-x-2">
+            <span class="text-white">🚘</span>
+            <strong>Véhicules</strong>
+          </p>
+        </router-link>
+      </li>
+      <li>
+        <router-link
+          to="/app/drivers"
+          class="flex items-center px-4 py-1 space-x-2 hover:bg-gray"
+        >
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <p class="space-x-2">
+            <span class="text-white">👷</span>
+            <strong>Conducteurs</strong>
+          </p>
+        </router-link>
+      </li>
+      <li v-if="$store.getters.getUser.role.type == 'super_admin'">
+        <router-link
+          to="/app/users"
+          class="flex items-center px-4 py-1 space-x-2 hover:bg-gray"
+        >
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <p class="space-x-2">
+            <span class="text-white">👨‍💼</span>
+            <strong>Utilisateurs</strong>
+          </p>
+        </router-link>
+      </li>
+      <li>
+        <router-link
+          to="/app/providers"
+          class="flex items-center px-4 py-1 space-x-2 hover:bg-gray"
+        >
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <p class="space-x-2">
+            <span class="text-white">🚚</span>
+            <strong>Fournisseurs</strong>
           </p>
         </router-link>
       </li>
     </ul>
   </aside>
+  <Search :show="search" @emit="setSearch" />
 </template>
 
 <script>
+import Search from "../components/Search.vue";
+
 export default {
   name: "Aside",
+  components: {
+    Search,
+  },
   data() {
     return {
-      menu: [
-        {
-          icon: "🏗",
-          name: "Entreprises",
-          link: "/app/companies",
-        },
-        {
-          icon: "🚘",
-          name: "Véhicules",
-          link: "/app/cars",
-        },
-        {
-          icon: "👷",
-          name: "Conducteurs",
-          link: "/app/drivers",
-        },
-        {
-          icon: "👨‍💼",
-          name: "Commerciaux",
-          link: "/app/commercials",
-        },
-        {
-          icon: "🚚",
-          name: "Fournisseurs",
-          link: "/app/providers",
-        },
-      ],
+      search: false,
     };
   },
   computed: {
@@ -143,6 +224,9 @@ export default {
     },
   },
   methods: {
+    setSearch(show) {
+      this.search = show;
+    },
     logout() {
       localStorage.clear();
       this.$router.push("/");

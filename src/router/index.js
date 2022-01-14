@@ -63,10 +63,18 @@ const routes = [
         component: () => import("../views/drivers/Edit.vue"),
       },
 
-      // Commercials
+      // Users
       {
-        path: "commercials",
-        component: () => import("../views/commercials/Table.vue"),
+        path: "users",
+        component: () => import("../views/users/Table.vue"),
+      },
+      {
+        path: "users/add",
+        component: () => import("../views/users/Add.vue"),
+      },
+      {
+        path: "users/edit/:id",
+        component: () => import("../views/users/Edit.vue"),
       },
 
       // Providers

@@ -6,23 +6,24 @@
   >
     <label>
       <input
+        v-model="user.username"
         required
-        v-model="company.name"
         type="text"
         maxlength="255"
-        placeholder="Nom de l'entreprise"
+        placeholder="Nom du conducteur"
         class="w-full bg-transparent text-5xl placeholder:text-gray font-bold outline-none"
       />
     </label>
     <table class="table-auto w-full my-6">
       <tr>
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
-          Adresse
+          Email
         </th>
         <td class="pb-1.5">
           <input
-            v-model="company.adress"
-            type="text"
+            v-model="user.email"
+            required
+            type="email"
             maxlength="255"
             placeholder="Saisir du texte"
             class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark focus:shadow-xl"
@@ -31,38 +32,48 @@
       </tr>
       <tr>
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
-          Détail
+          Mot de passe
         </th>
         <td class="pb-1.5">
           <input
-            v-model="company.detail"
+            v-model="password"
             type="text"
             maxlength="255"
-            placeholder="Saisir du texte"
+            placeholder="Écrire pour changer"
             class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark focus:shadow-xl"
           />
         </td>
       </tr>
       <tr>
-        <th class="flex px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
-          Véhicules ({{ company.cars.length }})
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Type
         </th>
         <td class="pb-1.5">
-          <router-link
-            v-for="car in company.cars"
-            :key="car.id"
-            :to="'/app/cars/edit/' + car.id"
-            class="group flex justify-between mb-1.5 px-2 py-1.5 rounded hover:bg-gray"
+          <label
+            class="flex justify-between items-center px-2 py-1.5 rounded hover:bg-gray"
           >
-            <span
-              class="font-medium underline underline-offset-2 decoration-white/30"
-              >{{ car.model }} {{ car.brand }}</span
+            <select
+              v-model="user.role.type"
+              class="w-full bg-transparent outline-none appearance-none cursor-pointer"
             >
-            <span
-              class="text-gray-light font-medium opacity-0 group-hover:opacity-100"
-              >Voir</span
-            >
-          </router-link>
+              <option value="customer" selected>Commercial</option>
+              <option value="authenticated">Éditeur</option>
+            </select>
+            <span class="text-gray-light">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </label>
         </td>
       </tr>
     </table>
@@ -115,7 +126,8 @@ import axios from "axios";
 export default {
   data() {
     return {
-      company: {},
+      user: {},
+      password: "",
       load: false,
     };
   },
@@ -133,10 +145,13 @@ export default {
       ) {
         return;
       }
+      if (this.password.length) {
+        this.user.password = this.password;
+      }
       try {
         const { data } = await axios.put(
-          this.$store.getters.getUrl(`/compagnies/${this.company.id}`),
-          this.company,
+          this.$store.getters.getUrl(`/users/${this.user.id}`),
+          this.user,
           {
             headers: {
               Authorization: `Bearer ${this.$store.getters.getToken}`,
@@ -144,7 +159,7 @@ export default {
           }
         );
         if (data) {
-          this.company = data;
+          this.user = data;
           this.setLoad();
         }
       } catch (error) {
@@ -152,17 +167,17 @@ export default {
       }
     },
     async handleDelete() {
-      if (confirm("Supprimer cette entreprise ?")) {
+      if (confirm("Supprimer ce conducteur ?")) {
         try {
           const { data } = await axios.delete(
-            this.$store.getters.getUrl(`/compagnies/${this.company.id}`),
+            this.$store.getters.getUrl(`/users/${this.user.id}`),
             {
               headers: {
                 Authorization: `Bearer ${this.$store.getters.getToken}`,
               },
             }
           );
-          if (data) this.$router.push("/app/companies");
+          if (data) this.$router.push("/app/users");
         } catch (error) {
           alert("Erreur durant la suppression de l'entreprise.");
         }
@@ -170,20 +185,20 @@ export default {
     },
   },
   beforeMount() {
-    this.company = this.$store.getters.findCompany(this.$route.params.id);
+    this.user = this.$store.getters.findUser(this.$route.params.id);
   },
   beforeUpdate() {
-    this.company = this.$store.getters.findCompany(this.$route.params.id);
+    this.user = this.$store.getters.findUser(this.$route.params.id);
   },
   mounted() {
     this.$store.commit("setHeader", [
       {
-        name: "🏗 Entreprises",
-        link: "/app/companies",
+        name: "👨‍💼 Utilisateurs",
+        link: "/app/users",
       },
       {
-        name: this.company.name,
-        link: `/app/companies/edit/${this.company.id}`,
+        name: this.user.username,
+        link: `/app/users/edit/${this.user.id}`,
       },
     ]);
   },
