@@ -73,7 +73,6 @@ export default {
       });
       if (data) {
         this.$store.commit("setUsers", data.reverse());
-        console.log(data);
       }
     } catch (error) {
       alert("Erreur lors de la récupération des données.");

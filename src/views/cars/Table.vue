@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     setDate(date) {
-      return moment(date).format("DD/MM/YYYY");
+      return moment(date, "YYYY-MM-DD").format("DD/MM/YYYY");
     },
   },
   async beforeMount() {

@@ -11,6 +11,7 @@ export default createStore({
     companies: [],
     drivers: [],
     users: [],
+    maintenances: [],
   },
   getters: {
     getUrl: (state) => (link) => {
@@ -52,6 +53,12 @@ export default createStore({
     findUser: (state) => (id) => {
       return state.users.find((user) => user.id == id);
     },
+    getMaintenances(state) {
+      return state.maintenances;
+    },
+    findMaintenance: (state) => (id) => {
+      return state.maintenances.find((maintenance) => maintenance.id == id);
+    },
   },
   mutations: {
     setToken(state, jwt) {
@@ -86,6 +93,12 @@ export default createStore({
     },
     addUser(state, user) {
       state.users.push(user);
+    },
+    setMaintenances(state, maintenances) {
+      state.maintenances = maintenances;
+    },
+    addMaintenance(state, maintenance) {
+      state.maintenances = maintenance;
     },
     async setApp(state) {
       // Companies
@@ -144,6 +157,20 @@ export default createStore({
           alert("Erreur lors de la récupération des données.");
           return;
         }
+      }
+
+      // Maintenances
+      try {
+        const { data } = await axios.get(state.url + "/maintenances", {
+          headers: { Authorization: `Bearer ${state.token}` },
+        });
+        if (data) {
+          state.maintenances = data.reverse();
+          console.log("Maintenances", data);
+        }
+      } catch (error) {
+        alert("Erreur lors de la récupération des données.");
+        return;
       }
 
       // Providers

@@ -363,20 +363,79 @@
           />
         </td>
       </tr>
+
       <tr>
-        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
-          Interventions (0)
+        <th class="block text-left text-gray-light font-medium">
+          <p class="flex items-center mb-1.5 px-2 py-1.5 space-x-2">
+            <span>Interventions ({{ car.maintenances.length }})</span>
+            <span
+              v-if="
+                !maintenance.show &&
+                ($store.getters.getUser.role.type == 'super_admin' ||
+                  $store.getters.getUser.role.type == 'authenticated')
+              "
+              @click="maintenance.show = true"
+              class="cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </p>
         </th>
-        <td class="pb-1.5">
-          <input
-            v-model="car.serie"
-            type="text"
-            maxlength="255"
-            placeholder="Saisir du texte"
-            class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark focus:shadow-xl"
-          />
+        <td>
+          <p v-show="maintenance.show" class="flex mb-1.5 px-2 py-1.5">
+            <input
+              v-model="maintenance.date"
+              type="text"
+              placeholder="Date (jj/mm/aaaa)"
+              maxlength="255"
+              class="w-full bg-transparent placeholder:text-gray-light outline-none"
+            />
+            <span
+              @click="handleMaintenance()"
+              class="flex-none text-gray-light cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </p>
+          <router-link
+            :to="`/app/cars/edit/${car.id}/maintenance/${maintenance.id}`"
+            v-for="maintenance in car.maintenances"
+            :key="maintenance.id"
+            class="flex justify-between mb-1.5 px-2 py-1.5 rounded cursor-pointer hover:bg-gray"
+          >
+            <span
+              class="font-medium underline underline-offset-2 decoration-white/30"
+              >{{ setDate(maintenance.date) }}</span
+            >
+            <span class="text-gray-light font-medium">{{
+              setDate(maintenance.date)
+            }}</span>
+          </router-link>
         </td>
       </tr>
+
       <tr>
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
           Observation
@@ -473,6 +532,26 @@
       </svg>
     </button>
   </div>
+  <div
+    v-if="image"
+    class="z-20 fixed top-0 left-0 bottom-0 right-0 flex justify-center bg-black/75"
+  >
+    <div class="px-12 py-24">
+      <img
+        @click="image = false"
+        :src="$store.getters.getUrl(image.url)"
+        :style="{ maxHeight: '100%', maxWidth: '100%' }"
+        class="rounded cursor-pointer"
+      />
+      <p
+        v-if="$store.getters.getUser.role.type == 'super_admin'"
+        @click="deleteFile(image.id)"
+        class="py-6 text-center font-medium cursor-pointer"
+      >
+        Supprimer
+      </p>
+    </div>
+  </div>
   <Associate
     :list="drivers"
     :id="car.id"
@@ -493,25 +572,7 @@
     v-if="associateCompany"
     @emit="setAssociate"
   />
-  <div
-    v-if="image"
-    class="z-20 fixed top-0 left-0 bottom-0 right-0 flex justify-center bg-black/75"
-  >
-    <div class="w-full max-w-xl py-24">
-      <img
-        @click="image = false"
-        :src="$store.getters.getUrl(image.url)"
-        class="rounded cursor-pointer"
-      />
-      <p
-        v-if="$store.getters.getUser.role.type == 'super_admin'"
-        @click="deleteFile(image.id)"
-        class="py-6 text-center font-medium cursor-pointer"
-      >
-        Supprimer
-      </p>
-    </div>
-  </div>
+  <router-view />
 </template>
 
 <script>
@@ -528,6 +589,11 @@ export default {
       associateCar: false,
       associateCompany: false,
       mileage: {
+        show: false,
+        date: "",
+        distance: "",
+      },
+      maintenance: {
         show: false,
         date: "",
         distance: "",
@@ -602,7 +668,11 @@ export default {
     getCar() {
       this.car = this.$store.getters.findCar(this.$route.params.id);
       if (this.car.id) {
-        this.car.service = moment(this.car.service).format("DD/MM/YYYY");
+        this.car.service = this.setDate(this.car.service);
+        this.car.mileages.forEach((mileage) => {
+          mileage.date = this.setDate(mileage.date);
+        });
+        console.log(this.car);
       }
     },
     compareMileages(mileage) {
@@ -634,7 +704,7 @@ export default {
       }, 3000);
     },
     setDate(date) {
-      return moment(date).format("DD/MM/YYYY");
+      return moment(date, "YYYY-MM-DD").format("DD/MM/YYYY");
     },
     async handleSubmit() {
       if (this.$store.getters.getUser.role.type == "customer") return;
@@ -709,13 +779,52 @@ export default {
         }
       }
     },
+    async handleMaintenance() {
+      if (this.maintenance.date.length) {
+        try {
+          const { data } = await axios.post(
+            this.$store.getters.getUrl("/maintenances"),
+            {
+              date: moment(this.maintenance.date, "DD/MM/YYYY").format(
+                "YYYY-MM-DD"
+              ),
+              car: this.car.id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.getters.getToken}`,
+              },
+            }
+          );
+          if (data) {
+            this.car.maintenances.push(data);
+            this.maintenance.date = "";
+          }
+        } catch (error) {
+          alert("Erreur durant l'envoie des données.");
+        }
+      }
+    },
   },
   beforeMount() {
     this.getCar();
-    console.log(this.car);
   },
   beforeUpdate() {
-    this.getCar();
+    this.$store.commit("setHeader", [
+      {
+        name: "🚘 Véhicules",
+        link: "/app/cars",
+      },
+      {
+        name: `${this.car.model} ${this.car.brand}`,
+        link: `/app/cars/edit/${this.car.id}`,
+      },
+    ]);
+  },
+  watch: {
+    $route() {
+      this.getCar();
+    },
   },
   mounted() {
     this.$store.commit("setHeader", [

@@ -182,7 +182,21 @@ export default {
     this.driver = this.$store.getters.findDriver(this.$route.params.id);
   },
   beforeUpdate() {
-    this.driver = this.$store.getters.findDriver(this.$route.params.id);
+    this.$store.commit("setHeader", [
+      {
+        name: "👷 Conducteurs",
+        link: "/app/drivers",
+      },
+      {
+        name: this.driver.name,
+        link: `/app/drivers/edit/${this.driver.id}`,
+      },
+    ]);
+  },
+  watch: {
+    $route() {
+      this.driver = this.$store.getters.findDriver(this.$route.params.id);
+    },
   },
   mounted() {
     this.$store.commit("setHeader", [

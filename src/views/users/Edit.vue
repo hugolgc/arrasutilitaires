@@ -183,7 +183,21 @@ export default {
     this.user = this.$store.getters.findUser(this.$route.params.id);
   },
   beforeUpdate() {
-    this.user = this.$store.getters.findUser(this.$route.params.id);
+    this.$store.commit("setHeader", [
+      {
+        name: "👨‍💼 Utilisateurs",
+        link: "/app/users",
+      },
+      {
+        name: this.user.username,
+        link: `/app/users/edit/${this.user.id}`,
+      },
+    ]);
+  },
+  watch: {
+    $route() {
+      this.user = this.$store.getters.findUser(this.$route.params.id);
+    },
   },
   mounted() {
     this.$store.commit("setHeader", [

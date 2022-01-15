@@ -168,7 +168,21 @@ export default {
     this.company = this.$store.getters.findCompany(this.$route.params.id);
   },
   beforeUpdate() {
-    this.company = this.$store.getters.findCompany(this.$route.params.id);
+    this.$store.commit("setHeader", [
+      {
+        name: "🏗 Entreprises",
+        link: "/app/companies",
+      },
+      {
+        name: this.company.name,
+        link: `/app/companies/edit/${this.company.id}`,
+      },
+    ]);
+  },
+  watch: {
+    $route() {
+      this.company = this.$store.getters.findCompany(this.$route.params.id);
+    },
   },
   mounted() {
     this.$store.commit("setHeader", [

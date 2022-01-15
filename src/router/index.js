@@ -47,6 +47,16 @@ const routes = [
       {
         path: "cars/edit/:id",
         component: () => import("../views/cars/Edit.vue"),
+        children: [
+          {
+            path: "maintenance/:option",
+            component: () => import("../components/Maintenance.vue"),
+            beforeEnter: () => {
+              // return store.getters.getUser == null ? "/" : true;
+              console.log(store.getters.getUser);
+            },
+          },
+        ],
       },
 
       // Drivers
