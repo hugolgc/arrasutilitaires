@@ -1,5 +1,5 @@
 <template>
-  <h1 class="mb-8 text-5xl font-bold">{{ title }}</h1>
+  <h1 class="mb-8 text-4xl sm:text-5xl font-bold px-6 sm:px-0">{{ title }}</h1>
   <p
     v-if="
       this.$store.getters.getUser.role.type == 'super_admin' ||
@@ -25,7 +25,7 @@
           />
         </svg>
       </span>
-      <span>Ajouter un {{ type }}</span>
+      <span>Ajouter un{{ type }}</span>
     </router-link>
   </p>
 </template>

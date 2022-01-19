@@ -1,54 +1,56 @@
 <template>
   <Title :title="title" :link="link" :type="type" />
-  <table
-    class="table-auto w-full border-t border-b border-gray divide-y divide-gray"
-  >
-    <thead class="text-left text-gray-light">
-      <tr class="divide-x divide-gray">
-        <th class="px-2 py-1.5 font-normal">Nom</th>
-        <th class="px-2 py-1.5 font-normal">Immatriculation</th>
-        <th class="px-2 py-1.5 font-normal">Mise en service</th>
-        <th class="px-2 py-1.5 font-normal">Entreprise</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-gray">
-      <tr v-for="car in cars" :key="car.id" class="divide-x divide-gray">
-        <td>
-          <router-link
-            :to="'/app/cars/edit/' + car.id"
-            class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
-          >
-            <span
-              class="font-medium underline underline-offset-2 decoration-white/30"
-              >{{ car.brand }} {{ car.model }}</span
+  <div class="overflow-x-auto max-w-screen sm:max-w-none">
+    <table
+      class="table-auto w-full min-w-fit border-t border-b border-gray divide-y divide-gray"
+    >
+      <thead class="text-left text-gray-light">
+        <tr class="divide-x divide-gray">
+          <th class="px-2 py-1.5 font-normal">Nom</th>
+          <th class="px-2 py-1.5 font-normal">Immatriculation</th>
+          <th class="px-2 py-1.5 font-normal">Mise en service</th>
+          <th class="px-2 py-1.5 font-normal">Entreprise</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray">
+        <tr v-for="car in cars" :key="car.id" class="divide-x divide-gray">
+          <td>
+            <router-link
+              :to="'/app/cars/edit/' + car.id"
+              class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
             >
-            <span
-              class="text-gray-light font-medium opacity-0 group-hover:opacity-100"
-              >Voir</span
+              <span
+                class="font-medium underline underline-offset-2 decoration-white/30"
+                >{{ car.brand }} {{ car.model }}</span
+              >
+              <span
+                class="ml-2 text-gray-light font-medium opacity-100 md:opacity-0 group-hover:opacity-100"
+                >Voir</span
+              >
+            </router-link>
+          </td>
+          <td class="px-2 py-1.5 select-all">{{ car.numberplate }}</td>
+          <td class="px-2 py-1.5 select-all">{{ setDate(car.service) }}</td>
+          <td>
+            <router-link
+              v-if="car.compagny"
+              :to="'/app/companies/edit/' + car.compagny.id"
+              class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
             >
-          </router-link>
-        </td>
-        <td class="px-2 py-1.5 select-all">{{ car.numberplate }}</td>
-        <td class="px-2 py-1.5 select-all">{{ setDate(car.service) }}</td>
-        <td>
-          <router-link
-            v-if="car.compagny"
-            :to="'/app/companies/edit/' + car.compagny.id"
-            class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
-          >
-            <span
-              class="font-medium underline underline-offset-2 decoration-white/30"
-              >{{ car.compagny ? car.compagny.name : "" }}</span
-            >
-            <span
-              class="text-gray-light font-medium opacity-0 group-hover:opacity-100"
-              >Voir</span
-            >
-          </router-link>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+              <span
+                class="font-medium underline underline-offset-2 decoration-white/30"
+                >{{ car.compagny ? car.compagny.name : "" }}</span
+              >
+              <span
+                class="ml-2 text-gray-light font-medium opacity-100 md:opacity-0 group-hover:opacity-100"
+                >Voir</span
+              >
+            </router-link>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -64,7 +66,7 @@ export default {
     return {
       title: "🚘 Véhicules",
       link: "/app/cars",
-      type: "véhicule",
+      type: " véhicule",
     };
   },
   computed: {

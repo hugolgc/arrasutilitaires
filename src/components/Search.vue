@@ -4,7 +4,7 @@
     v-show="show"
     class="z-20 fixed top-0 left-0 bottom-0 right-0 flex justify-center bg-black/75"
   >
-    <div id="background" class="w-full max-w-xl py-24">
+    <div id="background" class="w-full max-w-xl py-12 sm:py-24 px-6 sm:px-0">
       <div class="bg-gray-dark rounded overflow-hidden">
         <label
           class="relative flex items-center px-4 space-x-2.5 text-gray-light cursor-pointer"
@@ -36,7 +36,10 @@
           />
         </label>
 
-        <div v-show="companies.length" class="border-t border-gray">
+        <div
+          v-show="companies.length && search.length > 1"
+          class="border-t border-gray"
+        >
           <p
             class="px-3 py-2 text-xs text-gray-light font-medium tracking-wide"
           >
@@ -80,7 +83,10 @@
           </ul>
         </div>
 
-        <div v-show="cars.length" class="border-t border-gray">
+        <div
+          v-show="cars.length && search.length > 1"
+          class="border-t border-gray"
+        >
           <p
             class="px-3 py-2 text-xs text-gray-light font-medium tracking-wide"
           >
@@ -124,7 +130,10 @@
           </ul>
         </div>
 
-        <div v-show="drivers.length" class="border-t border-gray">
+        <div
+          v-show="drivers.length && search.length > 1"
+          class="border-t border-gray"
+        >
           <p
             class="px-3 py-2 text-xs text-gray-light font-medium tracking-wide"
           >
@@ -168,6 +177,100 @@
           </ul>
         </div>
 
+        <div
+          v-show="users.length && search.length > 1"
+          class="border-t border-gray"
+        >
+          <p
+            class="px-3 py-2 text-xs text-gray-light font-medium tracking-wide"
+          >
+            UTILISATEUR
+          </p>
+          <ul class="pb-2">
+            <li v-for="user in users" :key="user.id">
+              <router-link
+                @click="$emit('emit', false)"
+                :to="'/app/users/edit/' + user.id"
+                class="group flex justify-between items-center px-3 py-2 hover:bg-gray"
+              >
+                <p>
+                  <span>👨‍💼</span>
+                  <strong class="pl-2.5 pr-1.5 font-medium">{{
+                    user.username
+                  }}</strong>
+                  <span
+                    class="text-xs text-gray-light font-medium tracking-wide"
+                    >— Utilisateur</span
+                  >
+                </p>
+                <p class="group-hover:opacity-100 opacity-0 text-gray-light">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </p>
+              </router-link>
+            </li>
+          </ul>
+        </div>
+
+        <div
+          v-show="maintenances.length && search.length > 1"
+          class="border-t border-gray"
+        >
+          <p
+            class="px-3 py-2 text-xs text-gray-light font-medium tracking-wide"
+          >
+            INTERVENTIONS
+          </p>
+          <ul class="pb-2">
+            <li v-for="maintenance in maintenances" :key="maintenance.id">
+              <router-link
+                @click="$emit('emit', false)"
+                :to="'/app/maintenances/edit/' + maintenance.id"
+                class="group flex justify-between items-center px-3 py-2 hover:bg-gray"
+              >
+                <p>
+                  <span>🔧</span>
+                  <strong class="pl-2.5 pr-1.5 font-medium">{{
+                    setDate(maintenance.date)
+                  }}</strong>
+                  <span
+                    class="text-xs text-gray-light font-medium tracking-wide"
+                    >— Intervention</span
+                  >
+                </p>
+                <p class="group-hover:opacity-100 opacity-0 text-gray-light">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </p>
+              </router-link>
+            </li>
+          </ul>
+        </div>
+
         <p
           class="px-3 py-2 space-x-1.5 border-t border-gray text-xs text-gray-light tracking-wide"
         >
@@ -180,6 +283,9 @@
 </template>
 
 <script>
+import moment from "moment";
+moment.locale("fr");
+
 export default {
   name: "Search",
   props: {
@@ -190,6 +296,11 @@ export default {
       search: "",
       keys: [],
     };
+  },
+  methods: {
+    setDate(date) {
+      return moment(date).format("DD/MM/YYYY");
+    },
   },
   computed: {
     companies() {
@@ -214,6 +325,20 @@ export default {
       return this.$store.getters.getDrivers
         .filter((driver) =>
           driver.name.toLowerCase().includes(this.search.toLowerCase())
+        )
+        .splice(0, 3);
+    },
+    users() {
+      return this.$store.getters.getUsers
+        .filter((user) =>
+          user.username.toLowerCase().includes(this.search.toLowerCase())
+        )
+        .splice(0, 3);
+    },
+    maintenances() {
+      return this.$store.getters.getMaintenances
+        .filter((maintenance) =>
+          this.setDate(maintenance.date).includes(this.search)
         )
         .splice(0, 3);
     },

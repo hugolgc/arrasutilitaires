@@ -36,7 +36,7 @@
           >Laisser vide</span
         >
         <span
-          class="text-gray-light font-medium opacity-0 group-hover:opacity-100"
+          class="ml-2 text-gray-light font-medium opacity-100 md:opacity-0 group-hover:opacity-100"
           >Choisir</span
         >
       </li>
@@ -52,7 +52,7 @@
             >{{ item[searchField] }}</span
           >
           <span
-            class="text-gray-light font-medium opacity-0 group-hover:opacity-100"
+            class="ml-2 text-gray-light font-medium opacity-100 md:opacity-0 group-hover:opacity-100"
             >Choisir</span
           >
         </li>

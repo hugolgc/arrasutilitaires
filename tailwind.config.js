@@ -10,8 +10,11 @@ module.exports = {
           darker: "#2f3437",
         },
       },
-      zIndex: {
-        negative: "-1",
+      translate: {
+        negative: "-100%",
+      },
+      maxWidth: {
+        screen: "100vw",
       },
     },
   },

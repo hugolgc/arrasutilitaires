@@ -1,45 +1,47 @@
 <template>
   <Title :title="title" :link="link" :type="type" />
-  <table
-    class="table-auto w-full border-t border-b border-gray divide-y divide-gray"
-  >
-    <thead class="text-left text-gray-light">
-      <tr class="divide-x divide-gray">
-        <th class="px-2 py-1.5 font-normal">Nom</th>
-        <th class="px-2 py-1.5 font-normal">Adresse</th>
-        <th class="px-2 py-1.5 text-right font-normal">Véhicules</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-gray">
-      <tr
-        v-for="company in companies"
-        :key="company.id"
-        class="divide-x divide-gray"
-      >
-        <td>
-          <router-link
-            :to="'/app/companies/edit/' + company.id"
-            class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
-          >
-            <span
-              class="font-medium underline underline-offset-2 decoration-white/30"
-              >{{ company.name }}</span
+  <div class="overflow-x-auto max-w-screen sm:max-w-none">
+    <table
+      class="table-auto w-full min-w-fit border-t border-b border-gray divide-y divide-gray"
+    >
+      <thead class="text-left text-gray-light">
+        <tr class="divide-x divide-gray">
+          <th class="px-2 py-1.5 font-normal">Nom</th>
+          <th class="px-2 py-1.5 font-normal">Adresse</th>
+          <th class="px-2 py-1.5 text-right font-normal">Véhicules</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray">
+        <tr
+          v-for="company in companies"
+          :key="company.id"
+          class="divide-x divide-gray"
+        >
+          <td>
+            <router-link
+              :to="'/app/companies/edit/' + company.id"
+              class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
             >
-            <span
-              class="text-gray-light font-medium opacity-0 group-hover:opacity-100"
-              >Voir</span
-            >
-          </router-link>
-        </td>
-        <td class="px-2 py-1.5 select-all">{{ company.adress }}</td>
-        <td>
-          <p class="px-2 py-1.5 text-right">
-            {{ company.cars.length }}
-          </p>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+              <span
+                class="font-medium underline underline-offset-2 decoration-white/30"
+                >{{ company.name }}</span
+              >
+              <span
+                class="ml-2 text-gray-light font-medium opacity-100 md:opacity-0 group-hover:opacity-100"
+                >Voir</span
+              >
+            </router-link>
+          </td>
+          <td class="px-2 py-1.5 select-all">{{ company.adress }}</td>
+          <td>
+            <p class="px-2 py-1.5 text-right">
+              {{ company.cars.length }}
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -54,7 +56,7 @@ export default {
     return {
       title: "🏗 Entreprises",
       link: "/app/companies",
-      type: "entreprise",
+      type: "e entreprise",
     };
   },
   computed: {

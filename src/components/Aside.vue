@@ -1,9 +1,33 @@
 <template>
-  <aside class="w-60 flex-none bg-gray-dark font-bold">
-    <div class="flex items-center px-4 py-3 space-x-2">
+  <aside
+    :class="
+      $store.getters.getAside
+        ? 'translate-x-0'
+        : 'translate-x-negative lg:translate-x-0'
+    "
+    class="z-10 fixed lg:static top-0 left-0 bottom-0 w-60 flex-none bg-gray-dark shadow-2xl lg:shadow-none font-bold"
+  >
+    <div class="flex items-center px-4 py-3">
       <span
-        class="w-5 h-5 flex justify-center items-center rounded bg-white/40 text-gray-dark"
-        >H</span
+        @click="$store.commit('setAside', !$store.getters.getAside)"
+        class="block lg:hidden mr-2 cursor-pointer opacity-80"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </span>
+      <span
+        class="w-5 h-5 flex justify-center items-center mr-2 rounded bg-white/40 text-gray-dark uppercase"
+        >{{ user.username.charAt(0) }}</span
       >
       <span>{{ user.username }}</span>
     </div>
@@ -122,6 +146,31 @@
           <p class="space-x-2">
             <span class="text-white">🚘</span>
             <strong>Véhicules</strong>
+          </p>
+        </router-link>
+      </li>
+      <li>
+        <router-link
+          to="/app/maintenances"
+          class="flex items-center px-4 py-1 space-x-2 hover:bg-gray"
+        >
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <p class="space-x-2">
+            <span class="text-white">🔧</span>
+            <strong>Interventions</strong>
           </p>
         </router-link>
       </li>

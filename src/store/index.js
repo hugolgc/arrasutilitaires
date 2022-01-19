@@ -4,7 +4,8 @@ import { createStore } from "vuex";
 export default createStore({
   state: {
     // url: "http://localhost:1337",
-    url: "https://arrasutilitairesapi.ddns.net",
+    // url: "https://arrasutilitairesapi.ddns.net",
+    url: "http://gyis3d.n0c.world/",
     token: null,
     user: null,
     header: [],
@@ -12,6 +13,7 @@ export default createStore({
     drivers: [],
     users: [],
     maintenances: [],
+    aside: false,
   },
   getters: {
     getUrl: (state) => (link) => {
@@ -30,34 +32,73 @@ export default createStore({
       return state.header;
     },
     getCompanies(state) {
-      return state.companies;
+      return state.companies.sort((a, b) => {
+        if (a.name < b.name) {
+          return -1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        return 0;
+      });
     },
     findCompany: (state) => (id) => {
       return state.companies.find((company) => company.id == id);
     },
     getDrivers(state) {
-      return state.drivers;
+      return state.drivers.sort((a, b) => {
+        if (a.name < b.name) {
+          return -1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        return 0;
+      });
     },
     findDriver: (state) => (id) => {
       return state.drivers.find((driver) => driver.id == id);
     },
     getCars(state) {
-      return state.cars;
+      return state.cars
+        ? state.cars.sort((a, b) => {
+            if (a.brand < b.brand) {
+              return -1;
+            }
+            if (a.brand > b.brand) {
+              return 1;
+            }
+            return 0;
+          })
+        : [];
     },
     findCar: (state) => (id) => {
       return state.cars.find((car) => car.id == id);
     },
     getUsers(state) {
-      return state.users;
+      return state.users.sort((a, b) => {
+        if (a.username < b.username) {
+          return -1;
+        }
+        if (a.username > b.username) {
+          return 1;
+        }
+        return 0;
+      });
     },
     findUser: (state) => (id) => {
       return state.users.find((user) => user.id == id);
     },
     getMaintenances(state) {
-      return state.maintenances;
+      return state.maintenances.sort((a, b) => {
+        return new Date(b.date) - new Date(a.date);
+      });
     },
     findMaintenance: (state) => (id) => {
       return state.maintenances.find((maintenance) => maintenance.id == id);
+    },
+    getAside(state) {
+      return state.aside;
     },
   },
   mutations: {
@@ -99,6 +140,9 @@ export default createStore({
     },
     addMaintenance(state, maintenance) {
       state.maintenances = maintenance;
+    },
+    setAside(state, aside) {
+      state.aside = aside;
     },
     async setApp(state) {
       // Companies
@@ -143,6 +187,20 @@ export default createStore({
         return;
       }
 
+      // Maintenances
+      try {
+        const { data } = await axios.get(state.url + "/maintenances", {
+          headers: { Authorization: `Bearer ${state.token}` },
+        });
+        if (data) {
+          state.maintenances = data.reverse();
+          console.log("Maintenances", data);
+        }
+      } catch (error) {
+        alert("Erreur lors de la récupération des données.");
+        return;
+      }
+
       // Users
       if (state.user.role.type == "super_admin") {
         try {
@@ -157,20 +215,6 @@ export default createStore({
           alert("Erreur lors de la récupération des données.");
           return;
         }
-      }
-
-      // Maintenances
-      try {
-        const { data } = await axios.get(state.url + "/maintenances", {
-          headers: { Authorization: `Bearer ${state.token}` },
-        });
-        if (data) {
-          state.maintenances = data.reverse();
-          console.log("Maintenances", data);
-        }
-      } catch (error) {
-        alert("Erreur lors de la récupération des données.");
-        return;
       }
 
       // Providers

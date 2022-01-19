@@ -4,7 +4,7 @@
     method="post"
     class="w-full max-w-xs m-auto"
   >
-    <h1 class="mb-6 text-5xl text-center font-bold">Connexion</h1>
+    <h1 class="mb-6 text-4xl sm:text-5xl text-center font-bold">Connexion</h1>
     <label>
       <span class="block text-gray-light text-sm font-light">Email</span>
       <input

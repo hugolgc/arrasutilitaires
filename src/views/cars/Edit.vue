@@ -2,7 +2,7 @@
   <form
     @submit.prevent="handleSubmit()"
     method="post"
-    class="max-w-2xl mx-auto"
+    class="max-w-2xl mx-auto px-6 sm:px-0"
   >
     <label>
       <input
@@ -11,7 +11,7 @@
         type="text"
         maxlength="255"
         placeholder="Marque"
-        class="w-full bg-transparent text-5xl placeholder:text-gray font-bold outline-none"
+        class="w-full bg-transparent text-4xl sm:text-5xl placeholder:text-gray font-bold outline-none"
       />
       <input
         required
@@ -19,10 +19,307 @@
         type="text"
         maxlength="255"
         placeholder="Modèle"
-        class="w-full bg-transparent text-5xl placeholder:text-gray font-bold outline-none"
+        class="w-full bg-transparent text-4xl sm:text-5xl placeholder:text-gray font-bold outline-none"
       />
     </label>
     <table class="table-auto w-full my-6">
+      <tr>
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Entreprise
+        </th>
+        <td class="pb-1.5">
+          <div
+            v-if="car.compagny"
+            class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
+          >
+            <span
+              @click="$router.push('/app/companies/edit/' + car.compagny.id)"
+              class="block font-medium underline underline-offset-2 decoration-white/30 cursor-pointer"
+              >{{ car.compagny.name }}</span
+            >
+            <div class="space-x-3">
+              <span
+                @click="$router.push('/app/companies/edit/' + car.compagny.id)"
+                class="text-gray-light font-medium opacity-100 sm:opacity-0 cursor-pointer group-hover:opacity-100"
+                >Voir</span
+              >
+              <span
+                v-if="
+                  $store.getters.getUser.role.type == 'super_admin' ||
+                  $store.getters.getUser.role.type == 'authenticated'
+                "
+                @click="associateCompany = true"
+                class="text-gray-light font-medium opacity-100 sm:opacity-0 cursor-pointer group-hover:opacity-100"
+                >Modifier</span
+              >
+            </div>
+          </div>
+          <p
+            v-else-if="
+              $store.getters.getUser.role.type == 'super_admin' ||
+              $store.getters.getUser.role.type == 'authenticated'
+            "
+            @click="associateCompany = true"
+            class="px-2 py-1.5 rounded font-medium underline underline-offset-2 decoration-white/30 cursor-pointer hover:bg-gray"
+          >
+            Associer
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Conducteur
+        </th>
+        <td class="pb-1.5">
+          <div
+            v-if="car.driver"
+            class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
+          >
+            <span
+              @click="$router.push('/app/drivers/edit/' + car.driver.id)"
+              class="block font-medium underline underline-offset-2 decoration-white/30 cursor-pointer"
+              >{{ car.driver.name }}</span
+            >
+            <div class="space-x-3">
+              <span
+                @click="$router.push('/app/drivers/edit/' + car.driver.id)"
+                class="text-gray-light font-medium opacity-100 sm:opacity-0 cursor-pointer group-hover:opacity-100"
+                >Voir</span
+              >
+              <span
+                v-if="
+                  $store.getters.getUser.role.type == 'super_admin' ||
+                  $store.getters.getUser.role.type == 'authenticated'
+                "
+                @click="associateCar = true"
+                class="text-gray-light font-medium opacity-100 sm:opacity-0 cursor-pointer group-hover:opacity-100"
+                >Modifier</span
+              >
+            </div>
+          </div>
+          <p
+            v-else-if="
+              $store.getters.getUser.role.type == 'super_admin' ||
+              $store.getters.getUser.role.type == 'authenticated'
+            "
+            @click="associateCar = true"
+            class="px-2 py-1.5 rounded font-medium underline underline-offset-2 decoration-white/30 cursor-pointer hover:bg-gray"
+          >
+            Associer
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <th class="block text-left text-gray-light font-medium">
+          <p class="flex items-center mb-1.5 px-2 py-1.5 space-x-2">
+            <span>Kilométrages ({{ car.mileages.length }})</span>
+            <span
+              v-if="
+                !mileage.show &&
+                ($store.getters.getUser.role.type == 'super_admin' ||
+                  $store.getters.getUser.role.type == 'authenticated')
+              "
+              @click="mileage.show = true"
+              class="cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </p>
+          <p v-show="compare.distance" class="mb-1.5 px-2 py-1.5 text-white">
+            {{ compare.distance ? compare.distance.toLocaleString("fr") : "" }}
+            km en {{ compare.time }} jour{{ compare.time > 1 ? "s" : "" }}
+          </p>
+        </th>
+        <td>
+          <div v-show="mileage.show" class="flex items-center mb-1.5">
+            <p class="flex flex-auto px-2 py-1.5">
+              <input
+                v-model="mileage.distance"
+                type="text"
+                placeholder="Distance (km)"
+                maxlength="255"
+                class="w-full bg-transparent placeholder:text-gray-light outline-none"
+              />
+              <input
+                v-model="mileage.date"
+                type="text"
+                placeholder="Date (jj/mm/aaaa)"
+                maxlength="255"
+                class="w-full bg-transparent text-right placeholder:text-gray-light outline-none"
+              />
+            </p>
+            <span
+              @click="handleMileage()"
+              class="flex-none ml-1.5 text-gray-light cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+          <div
+            v-for="mileage in car.mileages"
+            :key="mileage.id"
+            class="flex items-center mb-1.5"
+          >
+            <p
+              :class="
+                compare.mileages.includes(mileage)
+                  ? 'bg-gray-dark shadow-xl'
+                  : ''
+              "
+              @click="compareMileages(mileage)"
+              class="flex flex-auto justify-between px-2 py-1.5 rounded cursor-pointer hover:bg-gray"
+            >
+              <span
+                class="font-medium underline underline-offset-2 decoration-white/30"
+                >{{ mileage.kilometers.toLocaleString("fr") }} km</span
+              >
+              <span class="text-gray-light font-medium">{{
+                setDate(mileage.date)
+              }}</span>
+            </p>
+            <span
+              v-if="$store.getters.getUser.role.type == 'super_admin'"
+              @click="deleteMileage(mileage.id)"
+              class="flex-none ml-1.5 text-gray-light cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th class="block text-left text-gray-light font-medium">
+          <p class="flex items-center mb-1.5 px-2 py-1.5 space-x-2">
+            <span>Interventions ({{ car.maintenances.length }})</span>
+            <span
+              v-if="
+                !maintenance.show &&
+                ($store.getters.getUser.role.type == 'super_admin' ||
+                  $store.getters.getUser.role.type == 'authenticated')
+              "
+              @click="maintenance.show = true"
+              class="cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </p>
+        </th>
+        <td>
+          <div v-show="maintenance.show" class="flex items-center mb-1.5">
+            <p class="flex flex-auto px-2 py-1.5">
+              <input
+                v-model="maintenance.date"
+                type="text"
+                placeholder="Date (jj/mm/aaaa)"
+                maxlength="255"
+                class="w-full bg-transparent placeholder:text-gray-light outline-none"
+              />
+              <input
+                v-model="maintenance.time"
+                type="text"
+                placeholder="Heure (hh:mm)"
+                maxlength="255"
+                class="w-full bg-transparent text-right placeholder:text-gray-light outline-none"
+              />
+            </p>
+            <span
+              @click="handleMaintenance()"
+              class="flex-none ml-1.5 text-gray-light cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+          <router-link
+            v-for="maintenance in car.maintenances"
+            :key="maintenance.id"
+            :to="`/app/maintenances/edit/${maintenance.id}`"
+            class="flex items-center mb-1.5"
+          >
+            <p
+              class="flex flex-auto justify-between px-2 py-1.5 rounded cursor-pointer hover:bg-gray"
+            >
+              <span
+                class="font-medium underline underline-offset-2 decoration-white/30"
+                >{{ setDate(maintenance.date) }}</span
+              >
+              <span class="text-gray-light font-medium">prix</span>
+            </p>
+            <span
+              v-if="$store.getters.getUser.role.type == 'super_admin'"
+              @click="deleteMaintenance(maintenance.id)"
+              class="flex-none ml-1.5 text-gray-light cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </router-link>
+        </td>
+      </tr>
       <tr>
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
           Numéro de série
@@ -64,177 +361,6 @@
             placeholder="Saisir du texte"
             class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark focus:shadow-xl"
           />
-        </td>
-      </tr>
-      <tr>
-        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
-          Entreprise
-        </th>
-        <td class="pb-1.5">
-          <div
-            v-if="car.compagny"
-            class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
-          >
-            <span
-              @click="$router.push('/app/companies/edit/' + car.compagny.id)"
-              class="block font-medium underline underline-offset-2 decoration-white/30 cursor-pointer"
-              >{{ car.compagny.name }}</span
-            >
-            <div class="space-x-3">
-              <span
-                @click="$router.push('/app/companies/edit/' + car.compagny.id)"
-                class="text-gray-light font-medium opacity-0 cursor-pointer group-hover:opacity-100"
-                >Voir</span
-              >
-              <span
-                v-if="
-                  $store.getters.getUser.role.type == 'super_admin' ||
-                  $store.getters.getUser.role.type == 'authenticated'
-                "
-                @click="associateCompany = true"
-                class="text-gray-light font-medium opacity-0 cursor-pointer group-hover:opacity-100"
-                >Modifier</span
-              >
-            </div>
-          </div>
-          <p
-            v-else-if="
-              $store.getters.getUser.role.type == 'super_admin' ||
-              $store.getters.getUser.role.type == 'authenticated'
-            "
-            @click="associateCompany = true"
-            class="px-2 py-1.5 rounded font-medium underline underline-offset-2 decoration-white/30 cursor-pointer hover:bg-gray"
-          >
-            Associer
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
-          Conducteur
-        </th>
-        <td class="pb-1.5">
-          <div
-            v-if="car.driver"
-            class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
-          >
-            <span
-              @click="$router.push('/app/drivers/edit/' + car.driver.id)"
-              class="block font-medium underline underline-offset-2 decoration-white/30 cursor-pointer"
-              >{{ car.driver.name }}</span
-            >
-            <div class="space-x-3">
-              <span
-                @click="$router.push('/app/drivers/edit/' + car.driver.id)"
-                class="text-gray-light font-medium opacity-0 cursor-pointer group-hover:opacity-100"
-                >Voir</span
-              >
-              <span
-                v-if="
-                  $store.getters.getUser.role.type == 'super_admin' ||
-                  $store.getters.getUser.role.type == 'authenticated'
-                "
-                @click="associateCar = true"
-                class="text-gray-light font-medium opacity-0 cursor-pointer group-hover:opacity-100"
-                >Modifier</span
-              >
-            </div>
-          </div>
-          <p
-            v-else-if="
-              $store.getters.getUser.role.type == 'super_admin' ||
-              $store.getters.getUser.role.type == 'authenticated'
-            "
-            @click="associateCar = true"
-            class="px-2 py-1.5 rounded font-medium underline underline-offset-2 decoration-white/30 cursor-pointer hover:bg-gray"
-          >
-            Associer
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <th class="block text-left text-gray-light font-medium">
-          <p class="flex items-center mb-1.5 px-2 py-1.5 space-x-2">
-            <span>Kilométrages</span>
-            <span
-              v-if="
-                !mileage.show &&
-                ($store.getters.getUser.role.type == 'super_admin' ||
-                  $store.getters.getUser.role.type == 'authenticated')
-              "
-              @click="mileage.show = true"
-              class="cursor-pointer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </span>
-          </p>
-          <p v-show="compare.distance" class="mb-1.5 px-2 py-1.5 text-white">
-            {{ compare.distance ? compare.distance.toLocaleString("fr") : "" }}
-            km en {{ compare.time }} jour{{ compare.time > 1 ? "s" : "" }}
-          </p>
-        </th>
-        <td>
-          <p v-show="mileage.show" class="flex mb-1.5 px-2 py-1.5">
-            <input
-              v-model="mileage.distance"
-              type="text"
-              placeholder="Distance (km)"
-              maxlength="255"
-              class="w-full bg-transparent placeholder:text-gray-light outline-none"
-            />
-            <input
-              v-model="mileage.date"
-              type="text"
-              placeholder="Date (jj/mm/aaaa)"
-              maxlength="255"
-              class="w-full bg-transparent placeholder:text-gray-light outline-none"
-            />
-            <span
-              @click="handleMileage()"
-              class="flex-none text-gray-light cursor-pointer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </span>
-          </p>
-          <p
-            v-for="mileage in car.mileages"
-            :key="mileage.id"
-            :class="
-              compare.mileages.includes(mileage) ? 'bg-gray-dark shadow-xl' : ''
-            "
-            @click="compareMileages(mileage)"
-            class="flex justify-between mb-1.5 px-2 py-1.5 rounded cursor-pointer hover:bg-gray"
-          >
-            <span
-              class="font-medium underline underline-offset-2 decoration-white/30"
-              >{{ mileage.kilometers.toLocaleString("fr") }} km</span
-            >
-            <span class="text-gray-light font-medium">{{
-              setDate(mileage.date)
-            }}</span>
-          </p>
         </td>
       </tr>
       <tr>
@@ -363,79 +489,6 @@
           />
         </td>
       </tr>
-
-      <tr>
-        <th class="block text-left text-gray-light font-medium">
-          <p class="flex items-center mb-1.5 px-2 py-1.5 space-x-2">
-            <span>Interventions ({{ car.maintenances.length }})</span>
-            <span
-              v-if="
-                !maintenance.show &&
-                ($store.getters.getUser.role.type == 'super_admin' ||
-                  $store.getters.getUser.role.type == 'authenticated')
-              "
-              @click="maintenance.show = true"
-              class="cursor-pointer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </span>
-          </p>
-        </th>
-        <td>
-          <p v-show="maintenance.show" class="flex mb-1.5 px-2 py-1.5">
-            <input
-              v-model="maintenance.date"
-              type="text"
-              placeholder="Date (jj/mm/aaaa)"
-              maxlength="255"
-              class="w-full bg-transparent placeholder:text-gray-light outline-none"
-            />
-            <span
-              @click="handleMaintenance()"
-              class="flex-none text-gray-light cursor-pointer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </span>
-          </p>
-          <router-link
-            :to="`/app/cars/edit/${car.id}/maintenance/${maintenance.id}`"
-            v-for="maintenance in car.maintenances"
-            :key="maintenance.id"
-            class="flex justify-between mb-1.5 px-2 py-1.5 rounded cursor-pointer hover:bg-gray"
-          >
-            <span
-              class="font-medium underline underline-offset-2 decoration-white/30"
-              >{{ setDate(maintenance.date) }}</span
-            >
-            <span class="text-gray-light font-medium">{{
-              setDate(maintenance.date)
-            }}</span>
-          </router-link>
-        </td>
-      </tr>
-
       <tr>
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
           Observation
@@ -572,7 +625,6 @@
     v-if="associateCompany"
     @emit="setAssociate"
   />
-  <router-view />
 </template>
 
 <script>
@@ -596,9 +648,9 @@ export default {
       maintenance: {
         show: false,
         date: "",
-        distance: "",
+        time: "",
       },
-      car: {},
+      car: null,
       load: false,
       image: false,
       compare: {
@@ -667,12 +719,11 @@ export default {
     },
     getCar() {
       this.car = this.$store.getters.findCar(this.$route.params.id);
-      if (this.car.id) {
+      if (this.car && this.car.id) {
         this.car.service = this.setDate(this.car.service);
         this.car.mileages.forEach((mileage) => {
           mileage.date = this.setDate(mileage.date);
         });
-        console.log(this.car);
       }
     },
     compareMileages(mileage) {
@@ -746,7 +797,7 @@ export default {
           );
           if (data) this.$router.push("/app/cars");
         } catch (error) {
-          alert("Erreur durant la suppression de l'entreprise.");
+          alert("Erreur durant la suppression du véhicule.");
         }
       }
     },
@@ -779,16 +830,42 @@ export default {
         }
       }
     },
+    async deleteMileage(id) {
+      if (confirm("Supprimer ce kilométrage ?")) {
+        try {
+          const { data } = await axios.delete(
+            this.$store.getters.getUrl(`/mileages/${id}`),
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.getters.getToken}`,
+              },
+            }
+          );
+          if (data) {
+            this.car.mileages = this.car.mileages.filter(
+              (mileage) => mileage.id != id
+            );
+            this.compare.mileages = [];
+            this.compare.time = null;
+            this.compare.distance = null;
+          }
+        } catch (error) {
+          alert("Erreur durant la la modification des données.");
+        }
+      }
+    },
     async handleMaintenance() {
-      if (this.maintenance.date.length) {
+      if (this.maintenance.date.length && this.maintenance.time.length) {
         try {
           const { data } = await axios.post(
             this.$store.getters.getUrl("/maintenances"),
             {
-              date: moment(this.maintenance.date, "DD/MM/YYYY").format(
-                "YYYY-MM-DD"
-              ),
+              date: moment(
+                `${this.maintenance.date} ${this.maintenance.time}`,
+                "DD/MM/YYYY HH:mm"
+              ).format(),
               car: this.car.id,
+              state: false,
             },
             {
               headers: {
@@ -797,11 +874,33 @@ export default {
             }
           );
           if (data) {
-            this.car.maintenances.push(data);
             this.maintenance.date = "";
+            this.maintenance.time = "";
+            this.$router.push(`/app/maintenances/${data.id}`);
           }
         } catch (error) {
           alert("Erreur durant l'envoie des données.");
+        }
+      }
+    },
+    async deleteMaintenance(id) {
+      if (confirm("Supprimer cette intervention ?")) {
+        try {
+          const { data } = await axios.delete(
+            this.$store.getters.getUrl(`/maintenances/${id}`),
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.getters.getToken}`,
+              },
+            }
+          );
+          if (data) {
+            this.car.maintenances = this.car.maintenances.filter(
+              (maintenance) => maintenance.id != id
+            );
+          }
+        } catch (error) {
+          alert("Erreur durant la la modification des données.");
         }
       }
     },

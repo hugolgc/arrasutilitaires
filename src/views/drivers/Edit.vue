@@ -2,7 +2,7 @@
   <form
     @submit.prevent="handleSubmit()"
     method="post"
-    class="max-w-2xl mx-auto"
+    class="max-w-2xl mx-auto px-6 sm:px-0"
   >
     <label>
       <input
@@ -11,7 +11,7 @@
         type="text"
         maxlength="255"
         placeholder="Nom du conducteur"
-        class="w-full bg-transparent text-5xl placeholder:text-gray font-bold outline-none"
+        class="w-full bg-transparent text-4xl sm:text-5xl placeholder:text-gray font-bold outline-none"
       />
     </label>
     <table class="table-auto w-full my-6">
@@ -73,7 +73,7 @@
               >{{ car.model }} {{ car.brand }}</span
             >
             <span
-              class="text-gray-light font-medium opacity-0 group-hover:opacity-100"
+              class="ml-2 text-gray-light font-medium opacity-100 md:opacity-0 group-hover:opacity-100"
               >Voir</span
             >
           </router-link>
@@ -129,7 +129,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      driver: {},
+      driver: null,
       load: false,
     };
   },
@@ -173,7 +173,7 @@ export default {
           );
           if (data) this.$router.push("/app/drivers");
         } catch (error) {
-          alert("Erreur durant la suppression de l'entreprise.");
+          alert("Erreur durant la suppression du conducteur.");
         }
       }
     },

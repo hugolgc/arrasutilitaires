@@ -2,7 +2,7 @@
   <form
     @submit.prevent="handleSubmit()"
     method="post"
-    class="max-w-2xl mx-auto"
+    class="max-w-2xl mx-auto px-6 sm:px-0"
   >
     <label>
       <input
@@ -11,7 +11,7 @@
         type="text"
         maxlength="255"
         placeholder="Nom de l'entreprise"
-        class="w-full bg-transparent text-5xl placeholder:text-gray font-bold outline-none"
+        class="w-full bg-transparent text-4xl sm:text-5xl placeholder:text-gray font-bold outline-none"
       />
     </label>
     <table class="table-auto w-full my-6">

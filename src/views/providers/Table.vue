@@ -13,7 +13,7 @@ export default {
     return {
       title: "🚚 Fournisseurs",
       link: "/app/providers",
-      type: "fournisseur",
+      type: " fournisseur",
     };
   },
   mounted() {

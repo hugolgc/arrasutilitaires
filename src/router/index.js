@@ -47,16 +47,6 @@ const routes = [
       {
         path: "cars/edit/:id",
         component: () => import("../views/cars/Edit.vue"),
-        children: [
-          {
-            path: "maintenance/:option",
-            component: () => import("../components/Maintenance.vue"),
-            beforeEnter: () => {
-              // return store.getters.getUser == null ? "/" : true;
-              console.log(store.getters.getUser);
-            },
-          },
-        ],
       },
 
       // Drivers
@@ -71,6 +61,20 @@ const routes = [
       {
         path: "drivers/edit/:id",
         component: () => import("../views/drivers/Edit.vue"),
+      },
+
+      // Maintenances
+      {
+        path: "maintenances",
+        component: () => import("../views/maintenances/Table.vue"),
+      },
+      // {
+      //   path: "maintenances/add",
+      //   component: () => import("../views/maintenances/Add.vue"),
+      // },
+      {
+        path: "maintenances/edit/:id",
+        component: () => import("../views/maintenances/Edit.vue"),
       },
 
       // Users
