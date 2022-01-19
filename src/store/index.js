@@ -5,7 +5,7 @@ export default createStore({
   state: {
     // url: "http://localhost:1337",
     // url: "https://arrasutilitairesapi.ddns.net",
-    url: "http://gyis3d.n0c.world/",
+    url: "https://gyis3d.n0c.world/",
     token: null,
     user: null,
     header: [],
