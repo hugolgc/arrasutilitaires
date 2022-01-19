@@ -3,8 +3,8 @@ import { createStore } from "vuex";
 
 export default createStore({
   state: {
-    url: "http://localhost:1337",
-    // url: "https://gyis3d.n0c.world/",
+    // url: "http://localhost:1337",
+    url: "https://gyis3d.n0c.world/",
     token: null,
     user: null,
     header: [],
