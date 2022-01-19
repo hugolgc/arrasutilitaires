@@ -876,7 +876,7 @@ export default {
           if (data) {
             this.maintenance.date = "";
             this.maintenance.time = "";
-            this.$router.push(`/app/maintenances/${data.id}`);
+            this.$router.push(`/app/maintenances/edit/${data.id}`);
           }
         } catch (error) {
           alert("Erreur durant l'envoie des données.");
