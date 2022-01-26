@@ -61,7 +61,8 @@ export default {
           this.redirectApp();
         }
       } catch (error) {
-        alert("Ces identifiants ne correspondent pas.");
+        // alert("Ces identifiants ne correspondent pas.");
+        alert(error);
       }
     },
     redirectApp() {
@@ -83,6 +84,7 @@ export default {
           this.redirectApp();
         }
       } catch (error) {
+        alert(error);
         localStorage.clear();
       }
     }
