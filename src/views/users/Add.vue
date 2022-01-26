@@ -14,7 +14,7 @@
         class="w-full bg-transparent text-4xl sm:text-5xl placeholder:text-gray font-bold outline-none"
       />
     </label>
-    <table class="table-auto w-full my-6">
+    <table class="table-auto sm:table-fixed w-full my-6">
       <tr>
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
           Email

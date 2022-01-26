@@ -14,7 +14,7 @@
         class="w-full bg-transparent text-4xl sm:text-5xl placeholder:text-gray font-bold outline-none"
       />
     </label>
-    <table class="table-auto w-full my-6">
+    <table class="table-auto sm:table-fixed w-full my-6">
       <tr>
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
           Email
@@ -53,12 +53,12 @@
             class="flex justify-between items-center px-2 py-1.5 rounded hover:bg-gray"
           >
             <select
-              v-model="user.role.type"
+              v-model="user.role.id"
               class="w-full bg-transparent outline-none appearance-none cursor-pointer"
             >
-              <option value="technician">Technicien</option>
-              <option value="customer">Commercial</option>
-              <option value="authenticated">Éditeur</option>
+              <option value="5">Technicien</option>
+              <option value="4">Commercial</option>
+              <option value="1">Éditeur</option>
             </select>
             <span class="text-gray-light">
               <svg
@@ -144,6 +144,7 @@ export default {
       if (this.password.length) {
         this.user.password = this.password;
       }
+      this.user.role - this.user.role.id;
       try {
         const { data } = await axios.put(
           this.$store.getters.getUrl(`/users/${this.user.id}`),

@@ -18,7 +18,9 @@ const routes = [
     redirect: "/app/companies",
     component: () => import("../components/Layout.vue"),
     beforeEnter: () => {
-      return store.getters.getUser == null ? "/" : true;
+      if (store.getters.getUser == null) return "/";
+      if (store.getters.getUser.role.type == "technician") return "/technician";
+      return true;
     },
     children: [
       // Companies
@@ -68,10 +70,11 @@ const routes = [
         path: "maintenances",
         component: () => import("../views/maintenances/Table.vue"),
       },
-      // {
-      //   path: "maintenances/add",
-      //   component: () => import("../views/maintenances/Add.vue"),
-      // },
+      {
+        alias: "maintenances/add",
+        path: "maintenances/add/:date",
+        component: () => import("../views/maintenances/Add.vue"),
+      },
       {
         path: "maintenances/edit/:id",
         component: () => import("../views/maintenances/Edit.vue"),
@@ -95,6 +98,28 @@ const routes = [
       {
         path: "providers",
         component: () => import("../views/providers/Table.vue"),
+      },
+    ],
+  },
+  {
+    path: "/technician",
+    name: "Technician",
+    redirect: "/technician/maintenances",
+    component: () => import("../components/Technician.vue"),
+    beforeEnter: () => {
+      if (store.getters.getUser == null) return "/";
+      if (store.getters.getUser.role.type != "technician")
+        return "/app/companies";
+      return true;
+    },
+    children: [
+      {
+        path: "maintenances",
+        component: () => import("../views/technician/List.vue"),
+      },
+      {
+        path: "maintenances/:id",
+        component: () => import("../views/technician/Single.vue"),
       },
     ],
   },

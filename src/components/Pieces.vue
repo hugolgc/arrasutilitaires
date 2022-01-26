@@ -1,15 +1,12 @@
 <template>
-  <div
-    class="z-20 fixed top-0 left-0 bottom-0 right-0 flex justify-center bg-black/75"
-  >
+  <div class="overflow-x-auto max-w-screen sm:max-w-none">
     <form
       @submit.prevent="handleSubmit()"
       action="post"
-      class="w-full px-12 py-24"
+      class="mt-24 border-t border-b sm:border-r sm:border-l border-gray sm:rounded overflow-hidden"
+      style="min-width: 44rem"
     >
-      <table
-        class="table-auto w-full bg-gray-darker divide-y divide-gray rounded overflow-hidden"
-      >
+      <table class="table-auto w-full bg-gray-dark divide-y divide-gray">
         <thead class="text-left text-gray-light">
           <tr class="divide-x divide-gray">
             <td>
@@ -17,12 +14,12 @@
                 class="flex justify-between items-center px-2 py-1.5 rounded hover:bg-gray"
               >
                 <select
-                  v-model="newPart.part_type"
+                  v-model="piece.part_type"
                   class="w-full bg-transparent outline-none appearance-none cursor-pointer"
                 >
                   <option selected value="default">Pièce</option>
                   <option
-                    v-for="part in partTypes"
+                    v-for="part in part_types"
                     :key="part.id"
                     :value="part.id"
                   >
@@ -47,56 +44,56 @@
             </td>
             <td>
               <input
-                v-model="newPart.customer"
+                v-model="piece.customer"
                 type="text"
                 maxlength="255"
                 placeholder="Fournisseur"
-                class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
+                class="w-full px-2 py-1.5 bg-transparent rounded outline-none text-white placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
               />
             </td>
             <td>
               <input
-                v-model="newPart.reference"
+                v-model="piece.reference"
                 type="text"
                 maxlength="255"
                 placeholder="Référence"
-                class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
+                class="w-full px-2 py-1.5 bg-transparent rounded outline-none text-white placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
               />
             </td>
             <td>
               <input
-                v-model="newPart.amount"
+                v-model="piece.amount"
                 type="text"
                 maxlength="255"
                 placeholder="Quantité"
-                class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
+                class="w-full px-2 py-1.5 bg-transparent rounded outline-none text-white placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
               />
             </td>
             <td>
               <input
-                v-model="newPart.publicPrice"
+                v-model="piece.publicPrice"
                 type="text"
                 maxlength="255"
                 placeholder="Tarif Public"
-                class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
+                class="w-full px-2 py-1.5 bg-transparent rounded outline-none text-white placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
               />
             </td>
             <td>
               <input
-                v-model="newPart.purchasePrice"
+                v-model="piece.purchasePrice"
                 type="text"
                 maxlength="255"
                 placeholder="Tarif Remisé"
-                class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
+                class="w-full px-2 py-1.5 bg-transparent rounded outline-none text-white placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
               />
             </td>
             <td>
               <input
-                v-model="newPart.customerPrice"
+                v-model="piece.customerPrice"
                 type="text"
                 maxlength="255"
                 placeholder="Tarif Client"
-                class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
+                class="w-full px-2 py-1.5 bg-transparent rounded outline-none text-white placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark"
               />
             </td>
             <td class="pl-1 py-0.5">
@@ -131,9 +128,15 @@
             <td class="px-2 py-1.5 select-all">{{ part.customer }}</td>
             <td class="px-2 py-1.5 select-all">{{ part.reference }}</td>
             <td class="px-2 py-1.5 select-all">{{ part.amount }}</td>
-            <td class="px-2 py-1.5 select-all">{{ part.publicPrice }}</td>
-            <td class="px-2 py-1.5 select-all">{{ part.purchasePrice }}</td>
-            <td class="px-2 py-1.5 select-all">{{ part.customerPrice }}</td>
+            <td class="px-2 py-1.5 select-all">
+              {{ part.publicPrice ? `${part.publicPrice}€` : "" }}
+            </td>
+            <td class="px-2 py-1.5 select-all">
+              {{ part.purchasePrice ? `${part.purchasePrice}€` : "" }}
+            </td>
+            <td class="px-2 py-1.5 select-all">
+              {{ part.customerPrice ? `${part.customerPrice}€` : "" }}
+            </td>
             <td class="pl-1 py-0.5">
               <span
                 @click="handleDelete(part.id)"
@@ -166,14 +169,18 @@
 import axios from "axios";
 
 export default {
+  name: "Pieces",
+  props: {
+    propsMaintenance: Object,
+  },
   data() {
     return {
-      maintenance: null,
-      partTypes: [],
-      newPart: {
+      maintenance: this.propsMaintenance,
+      part_types: [],
+      piece: {
         amount: null,
         customerPrice: null,
-        maintenance: this.$route.params.option,
+        maintenance: this.propsMaintenance.id,
         part_type: "default",
         publicPrice: null,
         purchasePrice: null,
@@ -183,12 +190,21 @@ export default {
   },
   methods: {
     getPartType(id) {
-      return this.partTypes.find((partType) => partType.id == id);
+      return this.part_types.length
+        ? this.part_types.find((part) => part.id == id)
+        : { name: "Pièce" };
     },
-    async getPartTypes() {
+    async setMaintenance() {
+      let cost = 0;
+      this.maintenance.parts.forEach((part) => {
+        if (part.customerPrice && part.amount) {
+          cost += part.customerPrice * part.amount;
+        }
+      });
       try {
-        const { data } = await axios.get(
-          this.$store.getters.getUrl("/part-types"),
+        const { data } = await axios.put(
+          this.$store.getters.getUrl(`/maintenances/${this.maintenance.id}`),
+          { cost: cost },
           {
             headers: {
               Authorization: `Bearer ${this.$store.getters.getToken}`,
@@ -196,21 +212,21 @@ export default {
           }
         );
         if (data) {
-          this.partTypes = data;
+          this.$emit("emit", data.cost);
         }
       } catch (error) {
-        alert("Erreur lors de la récupération des données.");
+        alert("Erreur durant l'envoie des données.");
       }
     },
     async handleSubmit() {
-      if (this.newPart.part_type == "default") {
-        alert("Choisir une pièce.");
+      if (this.piece.part_type == "default" || !this.piece.amount) {
+        alert("Saisir une pièce et une quantité.");
         return;
       }
       try {
         const { data } = await axios.post(
           this.$store.getters.getUrl("/parts"),
-          this.newPart,
+          this.piece,
           {
             headers: {
               Authorization: `Bearer ${this.$store.getters.getToken}`,
@@ -218,7 +234,18 @@ export default {
           }
         );
         if (data) {
-          this.setMaintenances();
+          data.part_type = data.part_type.id;
+          this.maintenance.parts.push(data);
+          this.piece = {
+            amount: null,
+            customerPrice: null,
+            maintenance: this.propsMaintenance.id,
+            part_type: "default",
+            publicPrice: null,
+            purchasePrice: null,
+            reference: null,
+          };
+          this.setMaintenance();
         }
       } catch (error) {
         alert("Erreur durant l'envoie des données.");
@@ -236,41 +263,33 @@ export default {
             }
           );
           if (data) {
-            this.setMaintenances();
+            this.maintenance.parts = this.maintenance.parts.filter(
+              (part) => part.id != id
+            );
+            this.setMaintenance();
           }
         } catch (error) {
           alert("Erreur lors de la récupération des données.");
         }
       }
     },
-    async setMaintenances() {
-      try {
-        const { data } = await axios.get(
-          this.$store.getters.getUrl("/maintenances"),
-          {
-            headers: {
-              Authorization: `Bearer ${this.$store.getters.getToken}`,
-            },
-          }
-        );
-        if (data) {
-          this.$store.commit("setMaintenances", data.reverse());
-          this.setMaintenance();
-        }
-      } catch (error) {
-        alert("Erreur lors de la récupération des données.");
-        return;
-      }
-    },
-    setMaintenance() {
-      this.maintenance = this.$store.getters.findMaintenance(
-        this.$route.params.option
-      );
-    },
   },
-  beforeMount() {
-    this.setMaintenance();
-    this.getPartTypes();
+  async beforeMount() {
+    try {
+      const { data } = await axios.get(
+        this.$store.getters.getUrl("/part-types"),
+        {
+          headers: {
+            Authorization: `Bearer ${this.$store.getters.getToken}`,
+          },
+        }
+      );
+      if (data) {
+        this.part_types = data;
+      }
+    } catch (error) {
+      alert("Erreur lors de la récupération des données.");
+    }
   },
 };
 </script>

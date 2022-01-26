@@ -22,7 +22,7 @@
         class="w-full bg-transparent text-4xl sm:text-5xl placeholder:text-gray font-bold outline-none"
       />
     </label>
-    <table class="table-auto w-full my-6">
+    <table class="table-auto sm:table-fixed w-full my-6">
       <tr>
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
           Entreprise
@@ -284,20 +284,25 @@
               </svg>
             </span>
           </div>
-          <router-link
+          <div
             v-for="maintenance in car.maintenances"
             :key="maintenance.id"
-            :to="`/app/maintenances/edit/${maintenance.id}`"
             class="flex items-center mb-1.5"
           >
             <p
               class="flex flex-auto justify-between px-2 py-1.5 rounded cursor-pointer hover:bg-gray"
             >
-              <span
+              <router-link
+                :to="`/app/maintenances/edit/${maintenance.id}`"
                 class="font-medium underline underline-offset-2 decoration-white/30"
-                >{{ setDate(maintenance.date) }}</span
+                >{{ setDate(maintenance.date) }}</router-link
               >
-              <span class="text-gray-light font-medium">prix</span>
+              <router-link
+                v-if="maintenance.cost"
+                :to="`/app/maintenances/edit/${maintenance.id}`"
+                class="text-gray-light font-medium"
+                >{{ maintenance.cost }}€</router-link
+              >
             </p>
             <span
               v-if="$store.getters.getUser.role.type == 'super_admin'"
@@ -317,7 +322,7 @@
                 />
               </svg>
             </span>
-          </router-link>
+          </div>
         </td>
       </tr>
       <tr>
@@ -518,7 +523,7 @@
           $store.getters.getUser.role.type == 'authenticated'
         "
         @click="setFile()"
-        class="h-24 flex justify-center items-center rounded bg-gray text-gray-light hover:text-white cursor-pointer"
+        class="h-24 flex justify-center items-center rounded bg-gray-dark hover:bg-gray text-gray-light hover:text-white cursor-pointer"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -594,7 +599,7 @@
         @click="image = false"
         :src="$store.getters.getUrl(image.url)"
         :style="{ maxHeight: '100%', maxWidth: '100%' }"
-        class="rounded cursor-pointer"
+        class="mx-auto rounded cursor-pointer"
       />
       <p
         v-if="$store.getters.getUser.role.type == 'super_admin'"
@@ -721,9 +726,9 @@ export default {
       this.car = this.$store.getters.findCar(this.$route.params.id);
       if (this.car && this.car.id) {
         this.car.service = this.setDate(this.car.service);
-        this.car.mileages.forEach((mileage) => {
-          mileage.date = this.setDate(mileage.date);
-        });
+        // this.car.mileages.forEach((mileage) => {
+        //   mileage.date = this.setDate(mileage.date);
+        // });
       }
     },
     compareMileages(mileage) {
@@ -762,9 +767,9 @@ export default {
       this.car.service = moment(this.car.service, "DD/MM/YYYY").format(
         "YYYY-MM-DD"
       );
-      this.car.mileages.forEach((mileage) => {
-        mileage.date = moment(mileage.date, "DD/MM/YYYY").format("YYYY-MM-DD");
-      });
+      // this.car.mileages.forEach((mileage) => {
+      //   mileage.date = moment(mileage.date, "DD/MM/YYYY").format("YYYY-MM-DD");
+      // });
       try {
         const { data } = await axios.put(
           this.$store.getters.getUrl(`/cars/${this.car.id}`),
@@ -821,9 +826,10 @@ export default {
             }
           );
           if (data) {
-            this.car.mileages.push(data);
+            // data.date = this.setDate(data.date)
             this.mileage.date = "";
             this.mileage.distance = "";
+            this.car.mileages.push(data);
           }
         } catch (error) {
           alert("Erreur durant l'envoie des données.");
@@ -876,6 +882,7 @@ export default {
           if (data) {
             this.maintenance.date = "";
             this.maintenance.time = "";
+            this.$store.commit("addMaintenance", data);
             this.$router.push(`/app/maintenances/edit/${data.id}`);
           }
         } catch (error) {

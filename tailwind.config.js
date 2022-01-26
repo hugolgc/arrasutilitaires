@@ -16,6 +16,12 @@ module.exports = {
       maxWidth: {
         screen: "100vw",
       },
+      minHeight: {
+        32: "8rem",
+      },
+      spacing: {
+        negative: "-1px",
+      },
     },
   },
   plugins: [],

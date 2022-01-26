@@ -4,14 +4,14 @@
     method="post"
     class="max-w-2xl mx-auto px-6 sm:px-0"
   >
-    <label>
+    <label class="flex flex-wrap">
       <input
         required
         v-model="date"
         type="text"
         maxlength="255"
         placeholder="Date (jj/mm/aaaa)"
-        class="w-full bg-transparent text-4xl sm:text-5xl placeholder:text-gray font-bold outline-none"
+        class="w-72 mr-auto bg-transparent text-4xl sm:text-5xl placeholder:text-gray font-bold outline-none"
       />
       <input
         required
@@ -19,10 +19,10 @@
         type="text"
         maxlength="255"
         placeholder="Heure (hh:mm)"
-        class="w-full bg-transparent text-4xl sm:text-5xl placeholder:text-gray font-bold outline-none"
+        class="w-36 bg-transparent text-4xl sm:text-5xl placeholder:text-gray font-bold outline-none"
       />
     </label>
-    <table class="table-auto w-full my-6">
+    <table v-if="maintenance" class="table-auto sm:table-fixed w-full my-6">
       <tr>
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
           Technicien
@@ -32,20 +32,18 @@
             v-if="maintenance.technician"
             class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
           >
-            <span
-              @click="$router.push('/app/users/edit/' + maintenance.technician)"
+            <router-link
+              :to="'/app/users/edit/' + maintenance.technician"
               class="block font-medium underline underline-offset-2 decoration-white/30 cursor-pointer"
               >{{
                 $store.getters.findUser(maintenance.technician).username
-              }}</span
+              }}</router-link
             >
             <div class="space-x-3">
-              <span
-                @click="
-                  $router.push('/app/users/edit/' + maintenance.technician)
-                "
+              <router-link
+                :to="'/app/users/edit/' + maintenance.technician"
                 class="text-gray-light font-medium opacity-100 sm:opacity-0 cursor-pointer group-hover:opacity-100"
-                >Voir</span
+                >Voir</router-link
               >
               <span
                 @click="associateTechnician = true"
@@ -72,16 +70,17 @@
             v-if="maintenance.car"
             class="group flex justify-between px-2 py-1.5 rounded hover:bg-gray"
           >
-            <span
-              @click="$router.push('/app/cars/edit/' + maintenance.car.id)"
+            <router-link
+              :to="'/app/cars/edit/' + maintenance.car.id"
               class="block font-medium underline underline-offset-2 decoration-white/30 cursor-pointer"
-              >{{ maintenance.car.brand }} {{ maintenance.car.model }}</span
+              >{{ maintenance.car.brand }}
+              {{ maintenance.car.model }}</router-link
             >
             <div class="space-x-3">
-              <span
-                @click="$router.push('/app/cars/edit/' + maintenance.car.id)"
+              <router-link
+                :to="'/app/cars/edit/' + maintenance.car.id"
                 class="text-gray-light font-medium opacity-100 sm:opacity-0 cursor-pointer group-hover:opacity-100"
-                >Voir</span
+                >Voir</router-link
               >
               <span
                 @click="associateCar = true"
@@ -111,8 +110,8 @@
               v-model="maintenance.state"
               class="w-full bg-transparent outline-none appearance-none cursor-pointer"
             >
-              <option value="true">Terminée</option>
               <option value="false">À faire</option>
+              <option value="true">Terminée</option>
             </select>
             <span class="text-gray-light">
               <svg
@@ -131,14 +130,940 @@
           </label>
         </td>
       </tr>
-      <tr>
+      <tr v-if="maintenance.end">
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
           Temps d'intervention
         </th>
         <td class="px-2 pt-1.5 pb-3">
-          {{
-            maintenance.end ? getDiff(maintenance.date, maintenance.end) : ""
-          }}
+          {{ getDiff(maintenance.date, maintenance.end) }}
+        </td>
+      </tr>
+      <tr v-if="maintenance.cost">
+        <th class="px-2 py-1.5 pb-3 text-left text-gray-light font-medium">
+          Montant des pièces
+        </th>
+        <td class="px-2 py-1.5 pb-3">{{ maintenance.cost }}€</td>
+      </tr>
+      <tr>
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Niveaux
+        </th>
+        <td
+          @click="controls.levels = !controls.levels"
+          class="px-2 pt-1.5 pb-3 text-gray-light font-medium"
+        >
+          <label
+            v-show="!controls.levels"
+            class="flex items-center space-x-2 cursor-pointer"
+          >
+            <span>Voir</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </label>
+          <label
+            v-show="controls.levels"
+            class="flex items-center space-x-2 cursor-pointer"
+          >
+            <span>Cacher</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.levels">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Niveau d'huile moteur
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.engine_oil_level"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.engine_oil_level"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.levels">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Niveau d'huile de boite et pont
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.gearbox_oil_level"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.gearbox_oil_level"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.levels">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Niveau du liquide de refroidissement
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.coolant_level"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.coolant_level"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.levels">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Niveau du liquide de frein
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.brake_fluid_level"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.brake_fluid_level"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.levels">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Niveau du lave-glaces
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.washer_level"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.washer_level"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.levels">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Niveau d'eau déminéralisée
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.water_level"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.water_level"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Freinages
+        </th>
+        <td
+          @click="controls.brakes = !controls.brakes"
+          class="px-2 pt-1.5 pb-3 text-gray-light font-medium"
+        >
+          <label
+            v-show="!controls.brakes"
+            class="flex items-center space-x-2 cursor-pointer"
+          >
+            <span>Voir</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </label>
+          <label
+            v-show="controls.brakes"
+            class="flex items-center space-x-2 cursor-pointer"
+          >
+            <span>Cacher</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.brakes">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Plaquettes de freins avant
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.front_brake_pad"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.front_brake_pad"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.brakes">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Plaquettes de freins arrière
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.rear_brake_pad"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.rear_brake_pad"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.brakes">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Disques avant
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.front_disc"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.front_disc"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.brakes">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Disques arrière
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.rear_disc"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.rear_disc"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.brakes">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Kit machoire arrière
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.rear_jaw_kit"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.rear_jaw_kit"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.brakes">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Usure pneus avant
+        </th>
+        <td class="pb-1.5">
+          <input
+            v-model="maintenance.front_tire_wear"
+            type="text"
+            maxlength="255"
+            placeholder="% Usure"
+            class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark focus:shadow-xl"
+          />
+        </td>
+      </tr>
+      <tr v-show="controls.brakes">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Usure pneus arrière
+        </th>
+        <td class="pb-1.5">
+          <input
+            v-model="maintenance.rear_tire_wear"
+            type="text"
+            maxlength="255"
+            placeholder="% Usure"
+            class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark focus:shadow-xl"
+          />
+        </td>
+      </tr>
+      <tr>
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Éclairages
+        </th>
+        <td
+          @click="controls.lightings = !controls.lightings"
+          class="px-2 pt-1.5 pb-3 text-gray-light font-medium"
+        >
+          <label
+            v-show="!controls.lightings"
+            class="flex items-center space-x-2 cursor-pointer"
+          >
+            <span>Voir</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </label>
+          <label
+            v-show="controls.lightings"
+            class="flex items-center space-x-2 cursor-pointer"
+          >
+            <span>Cacher</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.lightings">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Feux avant
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.front_lights"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.front_lights"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.lightings">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Feux arrière
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.rear_lights"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.rear_lights"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.lightings">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Phares
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.headlights"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.headlights"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.lightings">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Clignotants
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.blinkers"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.blinkers"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Vérifications
+        </th>
+        <td
+          @click="controls.checks = !controls.checks"
+          class="px-2 pt-1.5 pb-3 text-gray-light font-medium"
+        >
+          <label
+            v-show="!controls.checks"
+            class="flex items-center space-x-2 cursor-pointer"
+          >
+            <span>Voir</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </label>
+          <label
+            v-show="controls.checks"
+            class="flex items-center space-x-2 cursor-pointer"
+          >
+            <span>Cacher</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.checks">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Niveau de carburant
+        </th>
+        <td class="pb-1.5">
+          <input
+            v-model="maintenance.fuel_level"
+            type="text"
+            maxlength="255"
+            placeholder="Pourcentage %"
+            class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark focus:shadow-xl"
+          />
+        </td>
+      </tr>
+      <tr v-show="controls.checks">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Amortisseurs avant
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.front_shock_absorbers"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.front_shock_absorbers"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.checks">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Amortisseurs arrière
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.rear_shock_absorbers"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.rear_shock_absorbers"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.checks">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Pot d'échappement
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.exhaust_pipe"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.exhaust_pipe"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.checks">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Pare-brise
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.windshield"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.windshield"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.checks">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Batterie
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.battery"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.battery"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.checks">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Kit distribution et pompes à eaux
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.distribution_kit"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.distribution_kit"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr v-show="controls.checks">
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Kit courroie accessoire
+        </th>
+        <td class="flex space-x-8">
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.belt_kit"
+              value="true"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >Bon</span
+            >
+          </label>
+          <label class="cursor-pointer">
+            <input
+              v-model="maintenance.belt_kit"
+              value="false"
+              type="radio"
+              class="sr-only peer"
+            />
+            <span
+              class="px-2 py-1.5 rounded-md border border-transparent peer-checked:border-white"
+              >À vérifier</span
+            >
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
+          Observation
+        </th>
+        <td class="pb-1.5">
+          <input
+            v-model="maintenance.observation"
+            type="text"
+            maxlength="255"
+            placeholder="Saisir du texte"
+            class="w-full px-2 py-1.5 bg-transparent rounded outline-none placeholder:text-gray-light hover:bg-gray focus:bg-gray-dark focus:shadow-xl"
+          />
         </td>
       </tr>
     </table>
@@ -179,6 +1104,7 @@
       </svg>
     </button>
   </div>
+  <Pieces v-if="maintenance" :propsMaintenance="maintenance" @emit="setCost" />
   <Associate
     :list="cars"
     :id="maintenance.id"
@@ -205,10 +1131,12 @@
 import axios from "axios";
 import moment from "moment";
 import Associate from "../../components/Associate.vue";
+import Pieces from "../../components/Pieces.vue";
 
 export default {
   components: {
     Associate,
+    Pieces,
   },
   data() {
     return {
@@ -218,6 +1146,12 @@ export default {
       load: false,
       associateTechnician: false,
       associateCar: false,
+      controls: {
+        levels: false,
+        brakes: false,
+        lightings: false,
+        checks: false,
+      },
     };
   },
   computed: {
@@ -231,6 +1165,9 @@ export default {
     },
   },
   methods: {
+    setCost(cost) {
+      this.maintenance.cost = cost;
+    },
     async getCars() {
       try {
         const { data } = await axios.get(this.$store.getters.getUrl("/cars"), {
@@ -323,8 +1260,8 @@ export default {
         }
       }
     },
-    init() {
-      this.maintenance = this.$store.getters.findMaintenance(
+    async init() {
+      this.maintenance = await this.$store.getters.findMaintenance(
         this.$route.params.id
       );
       if (this.maintenance) {
@@ -344,10 +1281,6 @@ export default {
         name: "🔧 Interventions",
         link: "/app/maintenances",
       },
-      {
-        name: `${this.maintenance.car.brand} ${this.maintenance.car.model}`,
-        link: `/app/maintenances/edit/${this.maintenance.id}`,
-      },
     ]);
   },
   watch: {
@@ -360,10 +1293,6 @@ export default {
       {
         name: "🔧 Interventions",
         link: "/app/maintenances",
-      },
-      {
-        name: `${this.maintenance.car.brand} ${this.maintenance.car.model}`,
-        link: `/app/maintenances/edit/${this.maintenance.id}`,
       },
     ]);
     document.addEventListener("appSetup", () => this.init());
