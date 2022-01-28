@@ -146,7 +146,7 @@
       </tr>
       <tr>
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
-          Niveaux
+          Liquides
         </th>
         <td
           @click="controls.levels = !controls.levels"
@@ -347,7 +347,7 @@
       </tr>
       <tr v-show="controls.levels">
         <th class="px-2 pt-1.5 pb-3 text-left text-gray-light font-medium">
-          Niveau d'eau déminéralisée
+          AD Blue
         </th>
         <td class="flex space-x-8">
           <label class="cursor-pointer">

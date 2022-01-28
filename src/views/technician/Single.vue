@@ -226,7 +226,7 @@
         </td>
       </tr>
       <tr v-show="step == 0">
-        <th class="p-8 text-left font-normal">Niveau d'eau déminéralisée</th>
+        <th class="p-8 text-left font-normal">AD Blue</th>
         <td class="flex justify-end p-8 space-x-8">
           <label class="flex-none">
             <input
@@ -859,7 +859,7 @@ export default {
     return {
       step: 0,
       steps: [
-        "Niveaux",
+        "Liquides",
         "Freinages",
         "Éclairages",
         "Vérifications",
