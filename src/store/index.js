@@ -5,7 +5,7 @@ const dev = false;
 
 export default createStore({
   state: {
-    url: dev ? "http://localhost:1337" : "http://arrasutilitairesapi.ddns.net", // "https://gyis3d.n0c.world"
+    url: dev ? "http://localhost:1337" : "http://6arwjy.n0c.world", // "http://arrasutilitairesapi.ddns.net"
     token: null,
     user: null,
     header: [],
