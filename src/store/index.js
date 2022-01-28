@@ -1,10 +1,11 @@
 import axios from "axios";
 import { createStore } from "vuex";
 
+let dev = false;
+
 export default createStore({
   state: {
-    // url: "http://localhost:1337",
-    url: "http://gyis3d.n0c.world",
+    url: dev ? "http://localhost:1337" : "http://gyis3d.n0c.world",
     token: null,
     user: null,
     header: [],
@@ -151,7 +152,7 @@ export default createStore({
         });
         if (data) {
           state.companies = data.reverse();
-          console.log("Companies", data);
+          if (dev) console.log("Companies", data);
         }
       } catch (error) {
         alert("Erreur lors de la récupération des données.");
@@ -165,7 +166,7 @@ export default createStore({
         });
         if (data) {
           state.cars = data.reverse();
-          console.log("Cars", data);
+          if (dev) console.log("Cars", data);
         }
       } catch (error) {
         alert("Erreur lors de la récupération des données.");
@@ -179,7 +180,7 @@ export default createStore({
         });
         if (data) {
           state.drivers = data.reverse();
-          console.log("Drivers", data);
+          if (dev) console.log("Drivers", data);
         }
       } catch (error) {
         alert("Erreur lors de la récupération des données.");
@@ -193,7 +194,7 @@ export default createStore({
         });
         if (data) {
           state.maintenances = data.reverse();
-          console.log("Maintenances", data);
+          if (dev) console.log("Maintenances", data);
         }
       } catch (error) {
         alert("Erreur lors de la récupération des données.");
@@ -208,7 +209,7 @@ export default createStore({
           });
           if (data) {
             state.users = data.reverse();
-            console.log("Users", data);
+            if (dev) console.log("Users", data);
           }
         } catch (error) {
           alert("Erreur lors de la récupération des données.");
