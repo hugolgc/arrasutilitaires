@@ -1,11 +1,11 @@
 import axios from "axios";
 import { createStore } from "vuex";
 
-let dev = false;
+const dev = false;
 
 export default createStore({
   state: {
-    url: dev ? "http://localhost:1337" : "http://gyis3d.n0c.world",
+    url: dev ? "http://localhost:1337" : "https://gyis3d.n0c.world",
     token: null,
     user: null,
     header: [],
