@@ -18,7 +18,7 @@
           />
         </svg>
       </span>
-      <p class="px-1.5 py-0.5 rounded hover:bg-gray">Arras Utilitaires</p>
+      <p class="px-1.5 py-0.5 rounded hover:bg-gray">Atelier Utilitaires</p>
       <p v-for="(item, key) in items" :key="key">
         <span class="px-1 text-gray">/</span>
         <router-link

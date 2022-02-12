@@ -271,12 +271,12 @@
           </ul>
         </div>
 
-        <p
+        <!-- <p
           class="px-3 py-2 space-x-1.5 border-t border-gray text-xs text-gray-light tracking-wide"
         >
           <span class="px-1 py-0.5 bg-gray rounded">Alt + Espace</span>
           <span>pour Ouvrir/Fermer</span>
-        </p>
+        </p> -->
       </div>
     </div>
   </div>

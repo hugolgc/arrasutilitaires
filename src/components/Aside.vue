@@ -5,7 +5,7 @@
         ? 'translate-x-0'
         : 'translate-x-negative lg:translate-x-0'
     "
-    class="z-10 fixed lg:static top-0 left-0 bottom-0 w-60 flex-none bg-gray-dark shadow-2xl lg:shadow-none font-bold"
+    class="h-screen overflow-y-auto z-10 fixed lg:static top-0 left-0 bottom-0 w-60 flex flex-col flex-none bg-gray-dark shadow-2xl lg:shadow-none font-bold"
   >
     <div class="flex items-center px-4 py-3">
       <span
@@ -250,6 +250,13 @@
         </router-link>
       </li>
     </ul>
+    <figure class="mt-auto p-6">
+      <img
+        src="../assets/logo.png"
+        alt="Logo Atelier Utilitaires"
+        class=""
+      />
+    </figure>
   </aside>
   <Search :show="search" @emit="setSearch" />
 </template>
